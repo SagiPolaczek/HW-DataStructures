@@ -183,20 +183,23 @@ public class AVLTree {
    */
   public class AVLNode implements IAVLNode{
   		public int key;
-  		public String val;
-  		public IAVLNode parent; // Cosider change to type 'AVLNode'
-  		public IAVLNode left;   // ^^
-  		public IAVLNode right;  // ^^
+  		public String info;
+  		public IAVLNode parent = null; // Consider change to type 'AVLNode' AND\OR delete 'null'
+  		public IAVLNode left = null;   // ^^
+  		public IAVLNode right = null;  // ^^
 		public int height;
 
+		// Real node constructor
 		public AVLNode(int key, String val) {
 			this.key = key;
-			this.val = val;
-			height = 0;
+			this.info = val;
 		}
 
+		// Virtual node constructor
 		public AVLNode (){
-			height = -1;
+			this.key = -1;
+			this.info = null;
+			this.height = -1;
 		}
 
 
@@ -206,7 +209,7 @@ public class AVLTree {
 		}
 		public String getValue()
 		{
-			return this.val;
+			return this.info;
 		}
 		public void setLeft(IAVLNode node)
 		{
@@ -235,7 +238,7 @@ public class AVLTree {
 		// Returns True if this is a non-virtual AVL node
 		public boolean isRealNode()
 		{
-			return (this.height != -1);
+			return (this.key != -1);
 		}
     public void setHeight(int height)
     {
@@ -248,5 +251,4 @@ public class AVLTree {
   }
 
 }
-  
 
