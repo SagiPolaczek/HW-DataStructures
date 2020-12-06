@@ -159,8 +159,8 @@ public class AVLTree {
 	   * ! Do not delete or modify this - otherwise all tests will fail !
 	   */
 	public interface IAVLNode{	
-		public int getKey(); //returns node's key (for virtuval node return -1)
-		public String getValue(); //returns node's value [info] (for virtuval node return null)
+		public int getKey(); //returns node's key (for virtual node return -1)
+		public String getValue(); //returns node's value [info] (for virtual node return null)
 		public void setLeft(IAVLNode node); //sets left child
 		public IAVLNode getLeft(); //returns left child (if there is no left child return null)
 		public void setRight(IAVLNode node); //sets right child
@@ -182,50 +182,68 @@ public class AVLTree {
    * (It must implement IAVLNode)
    */
   public class AVLNode implements IAVLNode{
+  		public int key;
+  		public String val;
+  		public IAVLNode parent; // Cosider change to type 'AVLNode'
+  		public IAVLNode left;   // ^^
+  		public IAVLNode right;  // ^^
+		public int height;
+
+		public AVLNode(int key, String val) {
+			this.key = key;
+			this.val = val;
+			height = 0;
+		}
+
+		public AVLNode (){
+			height = -1;
+		}
+
+
 		public int getKey()
 		{
-			return 42; // to be replaced by student code
+			return this.key;
 		}
 		public String getValue()
 		{
-			return null; // to be replaced by student code
+			return this.val;
 		}
 		public void setLeft(IAVLNode node)
 		{
-			return null; // to be replaced by student code
+			this.left = node;
 		}
 		public IAVLNode getLeft()
 		{
-			return null; // to be replaced by student code
+			return this.left;
 		}
 		public void setRight(IAVLNode node)
 		{
-			return null; // to be replaced by student code
+			this.right = node;
 		}
 		public IAVLNode getRight()
 		{
-			return null; // to be replaced by student code
+			return this.right;
 		}
 		public void setParent(IAVLNode node)
 		{
-			return null; // to be replaced by student code
+			this.parent = node;
 		}
 		public IAVLNode getParent()
 		{
-			return null; // to be replaced by student code
+			return this.parent;
 		}
 		// Returns True if this is a non-virtual AVL node
 		public boolean isRealNode()
 		{
-			return true; // to be replaced by student code
+			return (this.height != -1);
 		}
     public void setHeight(int height)
     {
-      return null; // to be replaced by student code
+      this.height = height;
     }
     public int getHeight()
     {
-      return 42; // to be replaced by student code
+      return this.height;
     }
   }
 
