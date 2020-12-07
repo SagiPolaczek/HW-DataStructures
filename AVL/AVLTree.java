@@ -188,6 +188,7 @@ public class AVLTree {
   		public IAVLNode left = null;   // ^^
   		public IAVLNode right = null;  // ^^
 		public int height;
+		public int size;
 
 		// Real node constructor
 		public AVLNode(int key, String val) {
