@@ -9,6 +9,11 @@
 
 public class AVLTree {
 
+	/** pos - indicates index in array, while implementing keysToArray() & infoToArray() methods
+	 *  size - indicates the nummber of AVLnodes in our tree
+	 *  min, max - indicates the AVLnodes in our tree with the min,max keys
+	 */
+
 	AVLNode root, min, max;
 	int size, pos;
 
@@ -112,6 +117,14 @@ public class AVLTree {
 	  this.pos = 0;
 	  return result;
   }
+
+	/**
+	 * private void keysInorderTraversal(String[] arr, IAVLNode root)
+	 *
+	 * recursive function which insert the key value of each node in our AVLTree into an existing array of integers,
+	 * using inorder traversal.
+	 */
+
 	private void keysInorderTraversal(int[]arr, IAVLNode root) {
 		if(root != null) {
 			keysInorderTraversal(arr, root.getLeft());
@@ -136,6 +149,14 @@ public class AVLTree {
 	  this.pos = 0;
 	  return result;
   }
+
+	/**
+	 * private void infoInorderTraversal(String[] arr, IAVLNode root)
+	 *
+	 * recursive function which insert the info value of each node in our AVLTree into an existing array of Strings,
+	 * using inorder traversal.
+	 */
+
 	private void infoInorderTraversal(String[] arr, IAVLNode root) {
 		if(root != null) {
 			infoInorderTraversal(arr, root.getLeft());
