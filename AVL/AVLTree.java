@@ -9,6 +9,13 @@
 
 public class AVLTree {
 
+	AVLNode root = null;
+	int size = 0;
+
+	public AVLTree() {
+		// complete this later
+	}
+
   /**
    * public boolean empty()
    *
