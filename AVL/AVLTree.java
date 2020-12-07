@@ -60,9 +60,74 @@ public class AVLTree {
    * promotion/rotation - counted as one rebalnce operation, double-rotation is counted as 2.
    * returns -1 if an item with key k already exists in the tree.
    */
-   public int insert(int k, String i) {
+  public int insert(int k, String i) {
+	  AVLNode node = new AVLNode(k,i);
+	  if(root == null) {
+		  root = node;
+		  min = node;
+		  max = node;
+		  return 0;
+	  }
+	  if(search(k) != null) { // if k exist, return -1
+		  return -1;
+	  }
+	  // update min, max if needed
+	  if(k < min.getKey()) {
+		  min = node;
+	  }
+	  if(k > max.getKey()) {
+		  max = node;
+	  }
+	  // insert node to the tree
+	  // update & rotate
+
 	  return 42;	// to be replaced by student code
-   }
+  }
+
+	/* MISSING in rotations: ranks update */
+
+	private AVLNode rotateLeft(AVLNode root) {
+		AVLNode parent = root.parent;
+		AVLNode rightNode = root.right;
+		root.right = rightNode.left;
+		if(root.right != null) {
+			rightNode.left.parent = root;
+		}
+		rightNode.left = root;
+		root.parent = rightNode;
+		rightNode.parent = parent;
+		if(parent != null) {
+			if(parent.left == root) {
+				parent.left = rightNode;
+			}
+			else {
+				parent.right = rightNode;
+			}
+		}
+		return rightNode;
+	}
+
+	private AVLNode rotateRight(AVLNode root) {
+		AVLNode parent = root.parent;
+		AVLNode leftNode = root.left;
+		root.left = leftNode.right;
+		if(root.left != null) {
+			leftNode.right.parent = root;
+		}
+		leftNode.right = root;
+		root.parent = leftNode;
+		leftNode.parent = parent;
+		if(parent != null) {
+			if(parent.left == root) {
+				parent.left = leftNode;
+			}
+			else {
+				parent.right = leftNode;
+			}
+		}
+		return leftNode;
+	}
+
 
   /**
    * public int delete(int k)
