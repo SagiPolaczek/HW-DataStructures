@@ -9,12 +9,8 @@
 
 public class AVLTree {
 
-	AVLNode root = null;
-	int size = 0;
-
-	public AVLTree() {
-		// complete this later
-	}
+	AVLNode root, min, max;
+	int size, pos;
 
   /**
    * public boolean empty()
@@ -23,7 +19,7 @@ public class AVLTree {
    *
    */
   public boolean empty() {
-    return false; // to be replaced by student code
+    return (size == 0);
   }
 
  /**
@@ -34,7 +30,20 @@ public class AVLTree {
    */
   public String search(int k)
   {
-	return "42";  // to be replaced by student code
+	  IAVLNode curr = this.root;
+	  while(curr != null) {
+		  int currKey = curr.getKey();
+		  if(currKey == k) {
+			  return curr.getValue();
+		  }
+		  if(currKey < k) {
+			  curr = curr.getRight();
+		  }
+		  else {
+			  curr = curr.getLeft();
+		  }
+	  }
+	  return null;
   }
 
   /**
@@ -72,7 +81,7 @@ public class AVLTree {
     */
    public String min()
    {
-	   return "42"; // to be replaced by student code
+	   return this.min.getValue();
    }
 
    /**
@@ -83,7 +92,7 @@ public class AVLTree {
     */
    public String max()
    {
-	   return "42"; // to be replaced by student code
+	   return this.max.getValue();
    }
 
   /**
@@ -94,9 +103,23 @@ public class AVLTree {
    */
   public int[] keysToArray()
   {
-        int[] arr = new int[42]; // to be replaced by student code
-        return arr;              // to be replaced by student code
+	  if(size == 0) {
+		  return null;
+	  }
+	  int[] result = new int[size];
+	  IAVLNode runner = this.root;
+	  keysInorderTraversal(result, runner);
+	  this.pos = 0;
+	  return result;
   }
+	private void keysInorderTraversal(int[]arr, IAVLNode root) {
+		if(root != null) {
+			keysInorderTraversal(arr, root.getLeft());
+			arr[this.pos] = root.getKey();
+			this.pos++;
+			keysInorderTraversal(arr, root.getRight());
+		}
+	}
 
   /**
    * public String[] infoToArray()
@@ -107,9 +130,20 @@ public class AVLTree {
    */
   public String[] infoToArray()
   {
-        String[] arr = new String[42]; // to be replaced by student code
-        return arr;                    // to be replaced by student code
+	  String[] result = new String[size];
+	  IAVLNode runner = this.root;
+	  infoInorderTraversal(result, runner);
+	  this.pos = 0;
+	  return result;
   }
+	private void infoInorderTraversal(String[] arr, IAVLNode root) {
+		if(root != null) {
+			infoInorderTraversal(arr, root.getLeft());
+			arr[this.pos] = root.getValue();
+			this.pos++;
+			infoInorderTraversal(arr, root.getRight());
+		}
+	}
 
    /**
     * public int size()
@@ -121,7 +155,7 @@ public class AVLTree {
     */
    public int size()
    {
-	   return 42; // to be replaced by student code
+	   return this.size;
    }
    
      /**
@@ -134,7 +168,7 @@ public class AVLTree {
     */
    public IAVLNode getRoot()
    {
-	   return null;
+	   return this.root;
    }
      /**
     * public string split(int x)
