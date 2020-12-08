@@ -14,7 +14,7 @@ public class AVLTree {
 	 *  min, max - indicates the AVLnodes in our tree with the min,max keys
 	 */
 
-	AVLNode root, min, max;
+	IAVLNode root, min, max;
 	int size, pos;
 
   /**
@@ -61,7 +61,7 @@ public class AVLTree {
    * returns -1 if an item with key k already exists in the tree.
    */
   public int insert(int k, String i) {
-	  AVLNode node = new AVLNode(k,i);
+	  IAVLNode node = new AVLNode(k,i);
 	  if(root == null) {
 		  root = node;
 		  min = node;
@@ -86,43 +86,42 @@ public class AVLTree {
 
 	/* MISSING in rotations: ranks update */
 
-	private AVLNode rotateLeft(AVLNode root) {
-		AVLNode parent = root.parent;
-		AVLNode rightNode = root.right;
-		root.right = rightNode.left;
-		if(root.right != null) {
-			rightNode.left.parent = root;
+	private IAVLNode rotateLeft(IAVLNode root) {
+		IAVLNode parent = root.getParent();
+		IAVLNode rightNode = root.getRight();
+		root.setRight(rightNode.getLeft());
+		if(root.getRight() != null) {
+			rightNode.getLeft().setParent(root);
 		}
-		rightNode.left = root;
-		root.parent = rightNode;
-		rightNode.parent = parent;
+		rightNode.setLeft(root);
+		root.setParent(rightNode);
 		if(parent != null) {
-			if(parent.left == root) {
-				parent.left = rightNode;
+			if(parent.getLeft() == root) {
+				parent.setLeft(rightNode);
 			}
 			else {
-				parent.right = rightNode;
+				parent.setRight(rightNode);
 			}
 		}
 		return rightNode;
 	}
 
-	private AVLNode rotateRight(AVLNode root) {
-		AVLNode parent = root.parent;
-		AVLNode leftNode = root.left;
-		root.left = leftNode.right;
-		if(root.left != null) {
-			leftNode.right.parent = root;
+	private IAVLNode rotateRight(IAVLNode root) {
+		IAVLNode parent = root.getParent();
+		IAVLNode leftNode = root.getLeft();
+		root.setLeft(leftNode.getRight());
+		if(root.getLeft() != null) {
+			leftNode.getRight().setParent(root);
 		}
-		leftNode.right = root;
-		root.parent = leftNode;
-		leftNode.parent = parent;
+		leftNode.setRight(root);
+		root.setParent(leftNode);
+		leftNode.setParent(parent);
 		if(parent != null) {
-			if(parent.left == root) {
-				parent.left = leftNode;
+			if(parent.getLeft() == root) {
+				parent.setLeft(leftNode);
 			}
 			else {
-				parent.right = leftNode;
+				parent.setRight(leftNode);
 			}
 		}
 		return leftNode;
@@ -306,7 +305,7 @@ public class AVLTree {
    * (for example AVLNode), do it in this file, not in 
    * another file.
    * This class can and must be modified.
-   * (It must implement IAVLNode)
+   * (It must implement IAVLNode)כן
    */
   public class AVLNode implements IAVLNode{
   		public int key;
@@ -346,6 +345,7 @@ public class AVLTree {
 		public IAVLNode getLeft()
 		{
 			return this.left;
+
 		}
 		public void setRight(IAVLNode node)
 		{
