@@ -321,6 +321,8 @@ public class AVLTree {
 		public AVLNode(int key, String val) {
 			this.key = key;
 			this.info = val;
+			this.left = new AVLNode();
+			this.right = new AVLNode();
 		}
 
 		// Virtual node constructor
