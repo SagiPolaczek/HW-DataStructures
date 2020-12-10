@@ -313,9 +313,7 @@ public class AVLTree {
   public class AVLNode implements IAVLNode{
   		public int key;
   		public String info;
-  		public IAVLNode parent = null; // Consider change to type 'AVLNode' AND\OR delete 'null'
-  		public IAVLNode left = null;   // ^^
-  		public IAVLNode right = null;  // ^^
+  		public IAVLNode parent, left, right; // Consider change to type 'AVLNode' AND\OR delete 'null'
 		public int height;
 		public int size;
 
@@ -328,7 +326,6 @@ public class AVLTree {
 		// Virtual node constructor
 		public AVLNode (){
 			this.key = -1;
-			this.info = null;
 			this.height = -1;
 		}
 
@@ -348,7 +345,6 @@ public class AVLTree {
 		public IAVLNode getLeft()
 		{
 			return this.left;
-
 		}
 		public void setRight(IAVLNode node)
 		{
