@@ -68,8 +68,9 @@ public class AVLTree {
 		  max = node;
 		  return 0;
 	  }
-	  if(search(k) != null) { // if k exist, return -1
-		  return -1;
+	  IAVLNode parent = searchPosition(k);
+	  if(parent == null) {
+	  	return -1;
 	  }
 	  // update min, max if needed
 	  if(k < min.getKey()) {
@@ -79,9 +80,50 @@ public class AVLTree {
 		  max = node;
 	  }
 	  // insert node to the tree
-	  // update & rotate
+	  if(k < parent.getKey()) {
+	  	parent.setLeft(node);
+	  }
+	  else { // k > parent.getKey()
+	  	parent.setRight(node);
+	  }
+	  node.setParent(parent);
+	  //check if case B, since if it's case A we don't need to do anything else
+	  int rotationsNum = 0;
+	  if(parent.getRight() == null || parent.getLeft() == null) {
+	  	parent.setHeight(parent.getHeight() + 1); // promote
+	  	rotationsNum = balance(parent);
+	  }
 
-	  return 42;	// to be replaced by student code
+	  return rotationsNum;	// to be replaced by student code
+  }
+
+  private IAVLNode searchPosition(int k) {
+	  IAVLNode curr = this.root;
+	  while(curr.getLeft() != null && curr.getRight() != null) {
+		  int currKey = curr.getKey();
+		  if(currKey == k) { // there's already a node in the tree which contains this key - therefore we will not insert anything
+			  return null;
+		  }
+		  if(currKey < k) {
+			  curr = curr.getRight();
+		  }
+		  else {
+			  curr = curr.getLeft();
+		  }
+	  }
+	  // here there are 3 cases for curr - 1) leaf, 2) has only left child, 3) has only right child
+	  // first we check if one of the nodes have key == k, if so, we will not insert anything
+	  // otherwise, we will return the node which is the future parent of the node we wand to insert
+	  if(curr.getKey() == k || (curr.getLeft() != null && curr.getLeft().getKey() == k) || (curr.getRight() != null && curr.getRight().getKey() == k) ) {
+	  	return null;
+	  }
+	  if(curr.getLeft() != null && curr.getKey() < k) {
+		return curr.getLeft();
+	  }
+	  if(curr.getRight() != null && curr.getKey() > k) {
+		return curr.getRight();
+	  }
+	  return curr;
   }
 
 	/* MISSING in rotations: ranks update */
@@ -126,6 +168,20 @@ public class AVLTree {
 		}
 		return leftNode;
 	}
+	// in this function we can assume than node has two children since we had case B
+	private int balance(IAVLNode node){
+		int currRank = node.getHeight(), leftRank = node.getLeft().getHeight(), rightRank = node.getRight().getHeight();
+		// case 1
+		if(currRank == leftRank || currRank == rightRank) { // promote & up
+			node.setHeight(currRank + 1);
+			balance(node.getParent());
+		}
+		// case 2
+
+		// case 3
+
+		return 0;
+	}
 
 
   /**
@@ -139,7 +195,10 @@ public class AVLTree {
    */
    public int delete(int k)
    {
-	   return 42;	// to be replaced by student code
+	if(size == 0) {
+		return -1;
+	}
+   	return 42;	// to be replaced by student code
    }
 
    /**
