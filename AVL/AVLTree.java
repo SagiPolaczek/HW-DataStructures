@@ -185,13 +185,57 @@ public class AVLTree {
    * demotion/rotation - counted as one rebalnce operation, double-rotation is counted as 2.
    * returns -1 if an item with key k was not found in the tree.
    */
-   public int delete(int k)
+   public int delete(int k) // - SAGI
    {
-	if(size == 0) {
+	IAVLNode target = searchNode(k);
+	if (target == null){  // Node was not found
 		return -1;
 	}
+
+	// Check if target node isn't a leaf or an unary node
+	// If true, replace it with his successor, and then delete the successor,
+	// 										which must be leaf or unary.
+	if (target.getLeft().isRealNode() && target.getRight().isRealNode()) {
+		IAVLNode targetSuc = target.getRight();
+		while (targetSuc.getLeft().isRealNode()){
+			targetSuc = target.getLeft();
+		}
+		// targetSuc is indeed the target's successor
+		// Replacing by changing key and value, instead pointers.
+		target.setValue(targetSuc.getValue());
+		target.setKey(targetSuc.getKey());
+
+		// After replacing the target shall be the successor,
+		//     						and it must be leaf or unary.
+		target = targetSuc;
+	}
+
+
+
    	return 42;	// to be replaced by student code
    }
+
+
+   // Search node with key 'k' and return THE NODE ITSELF, or null if didn't found - SAGI
+   public IAVLNode searchNode(int k){
+   	if (this.empty()){ // The tree is empty
+   		return null;
+	}
+   	IAVLNode curr = this.root;
+   	while (curr.isRealNode()){
+   		int currKey = curr.getKey();
+		if (currKey == k){
+			return curr;
+		} else if (currKey > k){
+			curr = curr.getLeft();
+		} else if (currKey < k){
+			curr = curr.getRight();
+		}
+	}
+   	// We arrived virtual node, thus node does not exist in tree
+   	return null;
+   }
+
 
    /**
     * public String min()
@@ -350,6 +394,9 @@ public class AVLTree {
 		public boolean isRealNode(); // Returns True if this is a non-virtual AVL node
     	public void setHeight(int height); // sets the height of the node
     	public int getHeight(); // Returns the height of the node (-1 for virtual nodes)
+		// ---- Additional functions ----
+		public void setKey(int k);   // sets key
+		public void setValue(String s); // sets value
 	}
 
    /**
@@ -420,7 +467,7 @@ public class AVLTree {
 		{
 			return (this.key != -1);
 		}
-    public void setHeight(int height)
+    	public void setHeight(int height)
     {
       this.height = height;
     }
@@ -428,7 +475,12 @@ public class AVLTree {
     {
       return this.height;
     }
+    public void setKey(int k){
+			this.key = k;
+	}
+	public void setValue(String s){
+			this.info = s;
+	}
   }
-
 }
 
