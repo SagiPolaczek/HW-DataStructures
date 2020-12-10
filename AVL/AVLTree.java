@@ -172,8 +172,8 @@ public class AVLTree {
    */
   public int[] keysToArray()
   {
-	  if(size == 0) {
-		  return null;
+	  if(size == 0) {		 // Tree is empty
+		  return new int[0]; // Return an empty array
 	  }
 	  int[] result = new int[size];
 	  IAVLNode runner = this.root;
@@ -207,6 +207,9 @@ public class AVLTree {
    */
   public String[] infoToArray()
   {
+  	  if (size == 0){         // Tree is empty
+  	  	return new String[0]; // Return an empty array
+	  }
 	  String[] result = new String[size];
 	  IAVLNode runner = this.root;
 	  infoInorderTraversal(result, runner);
