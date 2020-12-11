@@ -556,6 +556,7 @@ public class AVLTree {
 		public int getSize(); 		// return size -SAGI
 		public void promoteSize();  // promote size -SAGI
 		public void demoteSize();   // demote size -SAGI
+		public void updateSize();   // update size -SAGI
 	}
 
    /**
@@ -669,6 +670,12 @@ public class AVLTree {
 	}
 	public void demoteSize(){
 			this.size--;
+	}
+	public void updateSize(){
+			if (!this.isRealNode()){
+				this.size = 0;
+			}
+			this.size = this.left.getSize() + this.right.getSize() + 1;
 	}
   }
 }
