@@ -228,7 +228,8 @@ public class AVLTree {
 		target = targetSuc;
 	}
 	IAVLNode targetParent = target.getParent();
-	   if (targetParent == null) { // Target node is the root itself. It has at most one child.
+	   // Special CASE - target node is the root itself. It has at most one child.
+	   if (targetParent == null) {
 			if (target.isLeaf()){
 				this.root = null;
 			} else if (target.getLeft().isRealNode()){ // Target's real node is on his left
@@ -253,9 +254,9 @@ public class AVLTree {
 		// CASE B - target is an unary node
 	   } else {
 		   IAVLNode replaceNode;
-		   if (target.getLeft().isRealNode()) { // Target's real node is on his left
+		   if (target.getLeft().isRealNode()) { 					 // Target's real node is on his left
 			   replaceNode = target.getLeft();
-		   } else {                             // Target's real node is on his right
+		   } else {                             					 // Target's real node is on his right
 			   replaceNode = target.getRight();
 		   }
 		   replaceNode.setParent(targetParent);
@@ -278,7 +279,50 @@ public class AVLTree {
 
 	// Rebalancing after deletion.
 	public int deleteRebalance(IAVLNode node, int count){
-		// NEED SOME CODE
+   		if (node == null){														// Done rebalancing
+   			return count;
+		}
+		int[] rankDiff = node.rankDifference();
+		int dLeft = rankDiff[0];
+		int dRight = rankDiff[1];
+		if ((dLeft == 2 && dRight == 1) || (dLeft == 1 && dRight == 2)){ 		// Node is balanced
+			return count;
+		}
+		if (dLeft == 2 && dRight == 2) { 										// Demote (Case 1)
+			node.demoteNode();
+			count++;
+			node = node.getParent();
+			return deleteRebalance(node, count);
+		}
+		if (dLeft == 3 && dRight == 1) {
+			int[] childRankDiff = node.getRight().rankDifference();
+			int childDLeft = childRankDiff[0];
+			int childDRight = childRankDiff[1];
+
+			// Single Rotation (Case 2 and Case 3)
+			if ((childDLeft == 1 && childDRight == 1) || (childDLeft == 2 && childDRight == 1)) {
+				rotateLeft(node);
+				count++;
+				node = node.getParent().getParent();
+				return deleteRebalance(node, count);
+			}
+
+		}
+		if (dLeft == 1 && dRight == 3) {
+			int[] childRankDiff = node.getLeft().rankDifference();
+			int childDLeft = childRankDiff[0];
+			int childDRight = childRankDiff[1];
+			if (childDLeft == 1 && childDRight == 1) {							// Single Rotation (Case 2)
+				rotateRight(node);
+				count++;
+				node = node.getParent().getParent();
+				return deleteRebalance(node, count);
+			}
+
+
+		}
+
+
 		return 42;
 	}
 
