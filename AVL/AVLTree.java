@@ -227,34 +227,60 @@ public class AVLTree {
 		//     						and it must be leaf or unary.
 		target = targetSuc;
 	}
-	IAVLNode targetParent = target.getParent(); // WHAT IF PARENT IS NULL??? FIX
-	// CASE A - target is a leaf
-	if (target.isLeaf()){
-		IAVLNode replaceNode = new AVLNode();
-		replaceNode.setParent(targetParent);
-		if (targetParent.getLeft().getKey() == target.getKey()) { // target is his parent left child
-			targetParent.setLeft(replaceNode);
-		}
-		else { // target is his parent right child
-			targetParent.setRight(replaceNode);
-		}
-		// NOW NEED TO REBALANCE AND RETURN AMOUNT OF OPERATIONS
+	IAVLNode targetParent = target.getParent();
+	   if (targetParent == null) { // Target node is the root itself. It has at most one child.
+			if (target.isLeaf()){
+				this.root = null;
+			} else if (target.getLeft().isRealNode()){ // Target's real node is on his left
+				this.root = target.getLeft();
+			} else {								   // Target's real node is on his right
+				this.root = target.getRight();
+			}
+		   this.root.setParent(null);	// Updating root's parent to null.
+	   }
 
+	   // CASE A - target is a leaf node
+	   else if (target.isLeaf()){
+		   IAVLNode replaceNode = new AVLNode();
+		   replaceNode.setParent(targetParent);
+		   if (targetParent.getLeft().getKey() == target.getKey()) { // target is his parent left child
+			   targetParent.setLeft(replaceNode);
+		   }
+		   else { // target is his parent right child
+			   targetParent.setRight(replaceNode);
+		   }
 
-	} else { // Target is an unary node
+		// CASE B - target is an unary node
+	   } else {
+		   IAVLNode replaceNode;
+		   if (target.getLeft().isRealNode()) { // Target's real node is on his left
+			   replaceNode = target.getLeft();
+		   } else {                             // Target's real node is on his right
+			   replaceNode = target.getRight();
+		   }
+		   replaceNode.setParent(targetParent);
+		   if (targetParent.getLeft().getKey() == target.getKey()) { // Target is his parent left child
+			   targetParent.setLeft(replaceNode);
+		   } else {                                                  // Target is his parent right child
+			   targetParent.setRight(replaceNode);
+		   }
+	   }
+
+	   // Need to update SIZE, MIN, MAX
+	   this.size--;					// O(1)
+	   this.min = findMin(root);    // O(log(n))
+	   this.max = findMax(root);	// O(log(n))
+
+	   // After the deletion, now its time to rebalance the tree and return the amount of operations executed.
+	   int count = 0;
+	   return deleteRebalance(targetParent, count);
+   }
+
+	// Rebalancing after deletion.
+	public int deleteRebalance(IAVLNode node, int count){
 		// NEED SOME CODE
+		return 42;
 	}
-
-
-
-   	return 42;	// to be replaced by student code
-   }
-
-   // Rebalancing after deletion.
-   public int deleteRebalance(IAVLNode node){
-		// NEED SOME CODE
-   	return 42;
-   }
 
 
    // Search node with key 'k' and return THE NODE ITSELF, or null if didn't found - SAGI
@@ -275,6 +301,32 @@ public class AVLTree {
 	}
    	// We arrived virtual node, thus node does not exist in tree
    	return null;
+   }
+
+   // By given root to a subtree, returns it's minimum node. - O(log(n))
+   // if tree is empty, returns null
+   public IAVLNode findMin(IAVLNode root) {
+	   if (this.empty()) {
+		   return null;
+	   }
+	   IAVLNode curr = root;
+	   while (curr.getLeft().isRealNode()) {
+		   curr = curr.getLeft();
+	   }
+	   return curr;
+   }
+
+   // By given root to a subtree, returns it's maximum node. - O(log(n))
+   // if tree is empty, return null
+	public IAVLNode findMax (IAVLNode root){
+   	if (this.empty()){
+   		return null;
+	}
+   	IAVLNode curr = root;
+   	while (curr.getRight().isRealNode()){
+   		curr = curr.getRight();
+	}
+   	return curr;
    }
 
 
