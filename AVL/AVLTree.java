@@ -124,6 +124,7 @@ public class AVLTree {
 		}
 		rightNode.setLeft(root);
 		root.setParent(rightNode);
+		rightNode.setParent(parent);
 		if(parent != null) {
 			if(parent.getLeft() == root) {
 				parent.setLeft(rightNode);
@@ -132,6 +133,8 @@ public class AVLTree {
 				parent.setRight(rightNode);
 			}
 		}
+		root.updateHeight(); // first update the lower, since its rightNode's child after rotation
+		rightNode.updateHeight();
 	}
 
 	private void rotateRight(IAVLNode root) {
@@ -152,6 +155,8 @@ public class AVLTree {
 				parent.setRight(leftNode);
 			}
 		}
+		root.updateHeight(); // first update the lower, since its leftNode's child after rotation
+		leftNode.updateHeight();
 	}
 	// in this function we can assume than node has two children since we had case B
 	private int insertRebalance(IAVLNode node, int balanceCnt){
@@ -556,6 +561,7 @@ public class AVLTree {
 		public boolean isLeaf();        // return true iff node is a leaf | *for virtual node return false -SAGI
 		public void promoteNode();      // promote node -SAGI
 		public int[] rankDifference(); // return array, arr[0] = rank difference with left node, arr[1] = rank difference with right node - ARIEL
+		public void updateHeight(); // updates node's height, we will use this after rotation - ARIEL
 	}
 
    /**
@@ -657,6 +663,9 @@ public class AVLTree {
 			result[0] = this.height - this.left.getHeight();
 			result[1] = this.height - this.right.getHeight();
 			return result;
+	}
+	public void updateHeight() {
+			this.height = Math.max(this.left.getHeight(), this.right.getHeight());
 	}
   }
 }
