@@ -99,7 +99,7 @@ public class AVLTree {
 	  }
 	  node.setParent(parent);
 	  this.size++; // update tree's size after insertion
-	  int balanceCnt = 0;
+	  int balanceCnt = 1; // since insert is also count as balance operation, we start to count from 1
 	  //check if case A, since if it's case B we don't need to do anything else
 	  if(parent.getRight() == null || parent.getLeft() == null) {
 	  	parent.setHeight(parent.getHeight() + 1); // promote
