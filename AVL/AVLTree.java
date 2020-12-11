@@ -196,6 +196,7 @@ public class AVLTree {
 	// If true, replace it with his successor, and then delete the successor,
 	// 										which must be leaf or unary.
 	if (target.getLeft().isRealNode() && target.getRight().isRealNode()) {
+		// Going right and all the way left.
 		IAVLNode targetSuc = target.getRight();
 		while (targetSuc.getLeft().isRealNode()){
 			targetSuc = target.getLeft();
@@ -396,8 +397,8 @@ public class AVLTree {
     	public int getHeight(); // Returns the height of the node (-1 for virtual nodes)
 
 		// ---- Additional methods ----
-		public void setKey(int k);   // sets key
-		public void setValue(String s); // sets value
+		public void setKey(int k);   // sets key -SAGI
+		public void setValue(String s); // sets value -SAGI
 	}
 
    /**
