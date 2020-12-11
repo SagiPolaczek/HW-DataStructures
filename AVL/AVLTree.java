@@ -288,6 +288,9 @@ public class AVLTree {
 	   this.min = findMin(root);    // O(log(n))
 	   this.max = findMax(root);	// O(log(n))
 
+	   // Update size for all relevant nodes
+	   updatePathSize(targetParent);
+
 	   // After the deletion, now its time to rebalance the tree and return the amount of operations executed.
 	   int count = 0;
 	   return deleteRebalance(targetParent, count);
@@ -375,7 +378,7 @@ public class AVLTree {
 
    // By given root to a subtree, returns it's maximum node. - O(log(n))
    // if tree is empty, return null
-	public IAVLNode findMax (IAVLNode root){
+   public IAVLNode findMax (IAVLNode root){
    	if (this.empty()){
    		return null;
 	}
@@ -385,6 +388,14 @@ public class AVLTree {
 	}
    	return curr;
    }
+
+	public void updatePathSize(IAVLNode node) {
+		IAVLNode curr = node;
+		while (curr != null) {
+			curr.updateSize();
+			curr = curr.getParent();
+		}
+	}
 
 
    /**
@@ -525,7 +536,7 @@ public class AVLTree {
     */   
    public int join(IAVLNode x, AVLTree t)
    {
-	   return 0; 
+	   return 0;
    }
 
 	/**
