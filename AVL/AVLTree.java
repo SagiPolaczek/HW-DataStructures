@@ -656,7 +656,7 @@ public class AVLTree {
 			return result;
 	}
 	public void updateHeight() {
-			this.height = Math.max(this.left.getHeight(), this.right.getHeight());
+			this.height = Math.max(this.left.getHeight(), this.right.getHeight()) + 1;
 	}
   }
 }
