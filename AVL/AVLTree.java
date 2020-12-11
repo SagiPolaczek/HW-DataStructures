@@ -205,7 +205,7 @@ public class AVLTree {
 		target.setValue(targetSuc.getValue());
 		target.setKey(targetSuc.getKey());
 
-		// After replacing the target shall be the successor,
+		// After replacing, the target shall be the successor,
 		//     						and it must be leaf or unary.
 		target = targetSuc;
 	}
@@ -394,7 +394,8 @@ public class AVLTree {
 		public boolean isRealNode(); // Returns True if this is a non-virtual AVL node
     	public void setHeight(int height); // sets the height of the node
     	public int getHeight(); // Returns the height of the node (-1 for virtual nodes)
-		// ---- Additional functions ----
+
+		// ---- Additional methods ----
 		public void setKey(int k);   // sets key
 		public void setValue(String s); // sets value
 	}
