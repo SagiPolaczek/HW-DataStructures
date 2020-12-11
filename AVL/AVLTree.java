@@ -210,10 +210,32 @@ public class AVLTree {
 		//     						and it must be leaf or unary.
 		target = targetSuc;
 	}
+	IAVLNode targetParent = target.getParent(); // WHAT IF PARENT IS NULL??? FIX
+	// CASE A - target is a leaf
+	if (target.isLeaf()){
+		IAVLNode replaceNode = new AVLNode();
+		replaceNode.setParent(targetParent);
+		if (targetParent.getLeft().getKey() == target.getKey()) { // target is his parent left child
+			targetParent.setLeft(replaceNode);
+		}
+		else { // target is his parent right child
+			targetParent.setRight(replaceNode);
+		}
+		// NOW NEED TO REBALANCE AND RETURN AMOUNT OF OPERATIONS
+
+	} else { // Target is an unary node
+		// NEED SOME CODE
+	}
 
 
 
    	return 42;	// to be replaced by student code
+   }
+
+   // Rebalancing after deletion.
+   public int deleteRebalance(IAVLNode node){
+		// NEED SOME CODE
+   	return 42;
    }
 
 
@@ -397,8 +419,10 @@ public class AVLTree {
     	public int getHeight(); // Returns the height of the node (-1 for virtual nodes)
 
 		// ---- Additional methods ----
-		public void setKey(int k);   // sets key -SAGI
+		public void setKey(int k);      // sets key -SAGI
 		public void setValue(String s); // sets value -SAGI
+		public void demoteNode();		// demote node -SAGI
+		public boolean isLeaf();        // return true iff node is a leaf | *for virtual node return false -SAGI
 	}
 
    /**
@@ -483,6 +507,17 @@ public class AVLTree {
 	public void setValue(String s){
 			this.info = s;
 	}
+	public void demoteNode(){
+			this.height--;
+	}
+	public boolean isLeaf(){
+			if (!this.isRealNode()){
+				return false;
+			}
+			return ((!this.left.isRealNode()) && (!this.right.isRealNode()));
+	}
+
+
   }
 }
 
