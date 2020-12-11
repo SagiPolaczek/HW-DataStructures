@@ -99,6 +99,7 @@ public class AVLTree {
 	  }
 	  node.setParent(parent);
 	  this.size++; // update tree's size after insertion
+	  updatePathSize(node);
 	  int balanceCnt = 1; // since insert is also count as balance operation, we start to count from 1
 	  //check if case A, since if it's case B we don't need to do anything else
 	  if(parent.getRight() == null || parent.getLeft() == null) {
@@ -146,6 +147,8 @@ public class AVLTree {
 		}
 		root.updateHeight(); // first update the lower, since its rightNode's child after rotation
 		rightNode.updateHeight();
+		root.updateSize();
+		rightNode.updateSize();
 	}
 
 	private void rotateRight(IAVLNode root) {
@@ -168,6 +171,8 @@ public class AVLTree {
 		}
 		root.updateHeight(); // first update the lower, since its leftNode's child after rotation
 		leftNode.updateHeight();
+		root.updateSize();
+		leftNode.updateSize();
 	}
 	// in this function we can assume than node has two children since we had case B
 	private int insertRebalance(IAVLNode node, int balanceCnt){
@@ -522,9 +527,52 @@ public class AVLTree {
 	  * precondition: search(x) != null (i.e. you can also assume that the tree is not empty)
     * postcondition: none
     */   
-   public AVLTree[] split(int x)
+   public AVLTree[] split(int x) //CHECK WHAT ABOUT PARENT POINTERS
    {
-	   return null; 
+   	AVLTree[] splitted = new AVLTree[2];
+   	IAVLNode xNode = searchNode(x);
+   	// set root,size values for each subtree
+   	splitted[0].root = xNode.getLeft();
+   	splitted[0].size = xNode.getLeft().getSize();
+   	splitted[0].root.setParent(null);
+   	splitted[1].root = xNode.getRight();
+   	splitted[1].size = xNode.getRight().getSize();
+   	splitted[1].root.setParent(null);
+   	xNode.setLeft(null);
+   	xNode.setRight(null);
+   	// split
+	IAVLNode child = xNode, parent = child;
+	while(child.getParent() != null) {
+		parent = child.getParent();
+		AVLTree temp = new AVLTree();
+		if(parent.getLeft() == child) {
+			parent.setLeft(null);
+			temp.root = parent.getRight();
+			temp.size = parent.getRight().getSize();
+			parent.setRight(null);
+		}
+		else { // child is right child of parent
+			parent.setRight(null);
+			temp.root = parent.getLeft();
+			temp.size = parent.getLeft().getSize();
+			parent.setLeft(null);
+		}
+		temp.root.setParent(null);
+		child.setParent(null);
+		if(parent.getKey() < x) {
+			splitted[0].join(parent, temp);
+		}
+		else {
+			splitted[1].join(parent, temp);
+		}
+		child = parent;
+	}
+   	// set min,max values for each subtree
+	splitted[0].min = findMin(splitted[0].root);
+	splitted[0].max = findMax(splitted[0].root);
+	splitted[1].min = findMin(splitted[1].root);
+	splitted[1].max = findMax(splitted[1].root);
+   	return splitted;
    }
    /**
     * public join(IAVLNode x, AVLTree t)
