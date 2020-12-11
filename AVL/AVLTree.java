@@ -553,6 +553,9 @@ public class AVLTree {
 		public void promoteNode();      // promote node -SAGI
 		public int[] rankDifference(); // return array, arr[0] = rank difference with left node, arr[1] = rank difference with right node - ARIEL
 		public void updateHeight(); // updates node's height, we will use this after rotation - ARIEL
+		public int getSize(); 		// return size -SAGI
+		public void promoteSize();  // promote size -SAGI
+		public void demoteSize();   // demote size -SAGI
 	}
 
    /**
@@ -657,6 +660,15 @@ public class AVLTree {
 	}
 	public void updateHeight() {
 			this.height = Math.max(this.left.getHeight(), this.right.getHeight()) + 1;
+	}
+	public int getSize(){
+			return this.size;
+	}
+	public void promoteSize(){
+			this.size++;
+	}
+	public void demoteSize(){
+			this.size--;
 	}
   }
 }
