@@ -125,7 +125,6 @@ public class AVLTree {
 	  return curr;
   }
 
-	/* MISSING in rotations: ranks update */
 
 	private void rotateLeft(IAVLNode root) {
 		IAVLNode parent = root.getParent();
