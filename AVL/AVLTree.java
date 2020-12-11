@@ -297,9 +297,9 @@ public class AVLTree {
 	// Rebalancing after deletion.
 	public int deleteRebalance(IAVLNode node, int count){
 
-   		// Out of tree, thus we done.
-   		if (node == null){
-   			return count;
+		// Out of tree, thus we done.
+		if (node == null){
+			return count;
 		}
 		int[] rankDiff = node.rankDifference();
 		int dLeft = rankDiff[0];
@@ -324,7 +324,7 @@ public class AVLTree {
 			// Single Rotation (Case 2 and Case 3)
 			if ((childDLeft == 1 && childDRight == 1) || (childDLeft == 2 && childDRight == 1)) {
 				rotateLeft(node);
-				count++;
+				count += 3;
 				node = node.getParent().getParent();
 				return deleteRebalance(node, count);
 			}
@@ -345,15 +345,16 @@ public class AVLTree {
 			// Single Rotation (Case 2 and Case 3)
 			if ((childDLeft == 1 && childDRight == 1) || (childDLeft == 1 && childDRight == 2)) {
 				rotateRight(node);
-				count++;
+				count += 3;
 				node = node.getParent().getParent();
 				return deleteRebalance(node, count);
 			}
 			// Double Rotation (Case 4)
 			if (childDLeft == 2 && childDRight == 1){
-				rotateLeft(node.getLeft());		count++;
-				rotateRight(node);				count++;
+				rotateLeft(node.getLeft());
+				rotateRight(node);
 				node = node.getParent();
+				count += 6;
 				return deleteRebalance(node, count);
 			}
 		}
