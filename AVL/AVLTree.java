@@ -581,11 +581,136 @@ public class AVLTree {
     * Returns the complexity of the operation (|tree.rank - t.rank| + 1).
 	  * precondition: keys(x,t) < keys() or keys(x,t) > keys(). t/tree might be empty (rank = -1).
     * postcondition: none
-    */   
-   public int join(IAVLNode x, AVLTree t)
-   {
-	   return 0;
+    */
+   public int join(IAVLNode x, AVLTree t) {
+	   int rankT1 = this.root.getHeight();
+	   int rankT2 = t.root.getHeight();
+	   // Both trees are empty
+	   if (this.empty() && t.empty()) {
+		   this.insert(x.getKey(), x.getValue());
+		   return 1;
+	   }
+	   // this is empty, t not.
+	   if (this.empty()) {
+		   t.insert(x.getKey(), x.getValue());
+		   this.makeCopyOf(t);
+		   return t.root.getHeight() + 2;
+	   }
+	   // t is empty, this not.
+	   if (t.empty()) {
+		   this.insert(x.getKey(), x.getValue());
+		   return this.root.getHeight() + 2;
+	   }
+	   IAVLNode currNode;
+	   // keys(x,t) < keys()
+	   if (x.getKey() > this.root.getKey()) {
+
+		   // keys(x,t) < keys() and rankT1 >= rankT2
+		   if (this.root.getHeight() >= t.root.getHeight()) {
+			   currNode = this.root;
+			   while (currNode.getHeight() > t.root.getHeight()) {
+				   currNode = currNode.getLeft();
+			   }
+			   x.setParent(currNode.getParent());
+			   currNode.setParent(x);
+			   t.root.setParent(x);
+			   x.setRight(currNode);
+			   x.setLeft(t.root);
+			   if (x.getParent() != null) {
+				   x.getParent().setLeft(x);
+			   }
+
+			   // Defining this tree as the new one
+			   if (this.root.getParent() != null) {
+				   this.root = this.root.getParent();
+			   }
+
+		   }
+
+		   // keys(x,t) < keys() and rankT1 < rankT2
+		   else {
+			   currNode = t.root;
+			   while (currNode.getHeight() > this.root.getHeight()) {
+				   currNode = currNode.getRight();
+			   }
+			   x.setParent(currNode.getParent());
+			   currNode.setParent(x);
+			   this.root.setParent(x);
+			   x.setRight(this.root);
+			   x.setLeft(currNode);
+			   if (x.getParent() != null) {
+				   x.getParent().setRight(x);
+			   }
+			   // Defining this tree as the new one
+			   if (t.root.getParent() != null) {
+				   t.root = t.root.getParent();
+			   }
+			   this.makeCopyOf(t);
+		   }
+
+	   }
+	   // keys(x,t) > keys()
+	   else {
+		   // keys(x,t) > keys() and rankT1 >= rankT2
+		   if (this.root.getHeight() >= t.root.getHeight()) {
+			   currNode = this.root;
+			   while (currNode.getHeight() > t.root.getHeight()) {
+				   currNode = currNode.getRight();
+			   }
+			   x.setParent(currNode.getParent());
+			   currNode.setParent(x);
+			   t.root.setParent(x);
+			   x.setLeft(currNode);
+			   x.setRight(t.root);
+			   if (x.getParent() != null) {
+				   x.getParent().setRight(x);
+			   }
+
+			   // Defining this tree as the new one
+			   if (this.root.getParent() != null) {
+				   this.root = this.root.getParent();
+			   }
+
+		   }
+
+
+		   // keys(x,t) > keys() and rankT1 < rankT2
+		   else {
+			   currNode = t.root;
+			   while (currNode.getHeight() > this.root.getHeight()) {
+				   currNode = currNode.getLeft();
+			   }
+			   x.setParent(currNode.getParent());
+			   currNode.setParent(x);
+			   this.root.setParent(x);
+			   x.setLeft(this.root);
+			   x.setRight(currNode);
+			   if (x.getParent() != null) {
+				   x.getParent().setLeft(x);
+			   }
+
+			   // Defining this tree as the new one
+			   if (t.root.getParent() != null) {
+				   t.root = t.root.getParent();
+			   }
+			   this.makeCopyOf(t);
+		   }
+
+	   }
+
+	   insertRebalance(x, 0);
+	   return Math.abs(t.root.getHeight() - this.root.getHeight()) + 1;
    }
+
+	// Make this tree a shallow copy of another tree.
+	// Takes O(1) time.
+	public void makeCopyOf(AVLTree t) {
+		this.root = t.root;
+		this.min = t.min;
+		this.max = t.max;
+		this.size = t.size;
+		this.pos = t.pos;
+	}
 
 	/**
 	   * public interface IAVLNode
