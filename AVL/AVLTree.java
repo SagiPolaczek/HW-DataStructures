@@ -223,6 +223,7 @@ public class AVLTree {
 		}
 		// NOW NEED TO REBALANCE AND RETURN AMOUNT OF OPERATIONS
 
+
 	} else { // Target is an unary node
 		// NEED SOME CODE
 	}
@@ -423,6 +424,7 @@ public class AVLTree {
 		public void setValue(String s); // sets value -SAGI
 		public void demoteNode();		// demote node -SAGI
 		public boolean isLeaf();        // return true iff node is a leaf | *for virtual node return false -SAGI
+		public void promoteNode();      // promote node -SAGI
 	}
 
    /**
@@ -516,8 +518,9 @@ public class AVLTree {
 			}
 			return ((!this.left.isRealNode()) && (!this.right.isRealNode()));
 	}
-
-
+	public void promoteNode(){
+			this.height++;
+	}
   }
 }
 
