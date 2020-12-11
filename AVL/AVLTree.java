@@ -98,7 +98,7 @@ public class AVLTree {
 
   private IAVLNode searchPosition(int k) {
 	  IAVLNode curr = this.root, next = this.root;
-	  while(next != null){
+	  while(next.isRealNode()){
 	  	curr = next;
 	  	if(next.getKey() == k) {
 	  		return null;
@@ -115,7 +115,7 @@ public class AVLTree {
 
 	/* MISSING in rotations: ranks update */
 
-	private IAVLNode rotateLeft(IAVLNode root) {
+	private void rotateLeft(IAVLNode root) {
 		IAVLNode parent = root.getParent();
 		IAVLNode rightNode = root.getRight();
 		root.setRight(rightNode.getLeft());
@@ -132,10 +132,9 @@ public class AVLTree {
 				parent.setRight(rightNode);
 			}
 		}
-		return rightNode;
 	}
 
-	private IAVLNode rotateRight(IAVLNode root) {
+	private void rotateRight(IAVLNode root) {
 		IAVLNode parent = root.getParent();
 		IAVLNode leftNode = root.getLeft();
 		root.setLeft(leftNode.getRight());
@@ -153,7 +152,6 @@ public class AVLTree {
 				parent.setRight(leftNode);
 			}
 		}
-		return leftNode;
 	}
 	// in this function we can assume than node has two children since we had case B
 	private int insertRebalance(IAVLNode node, int balanceCnt){
@@ -168,11 +166,30 @@ public class AVLTree {
 			insertRebalance(node.getParent(), balanceCnt+1);
 		}
 		// notice that if we are here then case 2 or case 3 will finish the balancing
+		int [] rankDiffC = node.rankDifference();
+		int [] rankDiffL = node.getLeft().rankDifference();
+		int [] rankDiffR = node.getRight().rankDifference();
 		// case 2
-
+		if(rankDiffC[0] == 0 && rankDiffL[0] == 1) {
+			this.rotateRight(node);
+			return balanceCnt+1;
+		}
+		else if(rankDiffC[1] == 0 && rankDiffR[1] == 0) {
+			this.rotateLeft(node);
+			return balanceCnt+1;
+		}
 		// case 3
-
-		return 0;
+		if(rankDiffC[0] == 0 && rankDiffL[0] == 2) {
+			this.rotateLeft(node.getLeft());
+			this.rotateRight(node);
+			return balanceCnt+2;
+		}
+		else if(rankDiffC[1] == 0 && rankDiffR[1] == 2) {
+			this.rotateRight(node.getRight());
+			this.rotateLeft(node);
+			return balanceCnt+2;
+		}
+		return 0; //NEVER GET HERE
 	}
 
 
@@ -425,6 +442,7 @@ public class AVLTree {
 		public void demoteNode();		// demote node -SAGI
 		public boolean isLeaf();        // return true iff node is a leaf | *for virtual node return false -SAGI
 		public void promoteNode();      // promote node -SAGI
+		public int[] rankDifference(); // return array, arr[0] = rank difference with left node, arr[1] = rank difference with right node - ARIEL
 	}
 
    /**
@@ -520,6 +538,12 @@ public class AVLTree {
 	}
 	public void promoteNode(){
 			this.height++;
+	}
+	public int[] rankDifference() {
+			int[] result = new int[2];
+			result[0] = this.height - this.left.getHeight();
+			result[1] = this.height - this.right.getHeight();
+			return result;
 	}
   }
 }
