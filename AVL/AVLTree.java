@@ -35,21 +35,32 @@ public class AVLTree {
    */
   public String search(int k)
   {
-	  IAVLNode curr = this.root;
-	  while(curr != null) {
-		  int currKey = curr.getKey();
-		  if(currKey == k) {
-			  return curr.getValue();
-		  }
-		  if(currKey < k) {
-			  curr = curr.getRight();
-		  }
-		  else {
-			  curr = curr.getLeft();
-		  }
+	  IAVLNode node = searchNode(k);
+	  if(node != null) {
+	  	return node.getValue();
 	  }
 	  return null;
   }
+
+	// Search node with key 'k' and return THE NODE ITSELF, or null if didn't found - SAGI
+	public IAVLNode searchNode(int k){
+		if (this.empty()){ // The tree is empty
+			return null;
+		}
+		IAVLNode curr = this.root;
+		while (curr.isRealNode()){
+			int currKey = curr.getKey();
+			if (currKey == k){
+				return curr;
+			} else if (currKey > k){
+				curr = curr.getLeft();
+			} else if (currKey < k){
+				curr = curr.getRight();
+			}
+		}
+		// We arrived virtual node, thus node does not exist in tree
+		return null;
+	}
 
   /**
    * public int insert(int k, String i)
@@ -87,6 +98,7 @@ public class AVLTree {
 	  	parent.setRight(node);
 	  }
 	  node.setParent(parent);
+	  this.size++; // update tree's size after insertion
 	  int balanceCnt = 0;
 	  //check if case A, since if it's case B we don't need to do anything else
 	  if(parent.getRight() == null || parent.getLeft() == null) {
@@ -168,7 +180,7 @@ public class AVLTree {
 		// case 1
 		if((leftRankDiff == 0 && rightRankDiff == 1) || (leftRankDiff == 1 && rightRankDiff == 0)) { // promote & up
 			node.setHeight(node.getHeight() + 1);
-			insertRebalance(node.getParent(), balanceCnt+1);
+			insertRebalance(node.getParent(), balanceCnt+1); // add 1 for promote
 		}
 		// notice that if we are here then case 2 or case 3 will finish the balancing
 		int [] rankDiffC = node.rankDifference();
@@ -177,22 +189,22 @@ public class AVLTree {
 		// case 2
 		if(rankDiffC[0] == 0 && rankDiffL[0] == 1) {
 			this.rotateRight(node);
-			return balanceCnt+1;
+			return balanceCnt+2; // add 1 for rotation & 1 for demote
 		}
 		else if(rankDiffC[1] == 0 && rankDiffR[1] == 0) {
 			this.rotateLeft(node);
-			return balanceCnt+1;
+			return balanceCnt+2; // add 1 for rotation & 1 for demote
 		}
 		// case 3
 		if(rankDiffC[0] == 0 && rankDiffL[0] == 2) {
 			this.rotateLeft(node.getLeft());
 			this.rotateRight(node);
-			return balanceCnt+2;
+			return balanceCnt+5; // add 2 for rotation & 2 for demote & 1 for promote
 		}
 		else if(rankDiffC[1] == 0 && rankDiffR[1] == 2) {
 			this.rotateRight(node.getRight());
 			this.rotateLeft(node);
-			return balanceCnt+2;
+			return balanceCnt+5; // add 2 for rotation & 2 for demote & 1 for promote
 		}
 		return 0; //NEVER GET HERE
 	}
@@ -348,27 +360,6 @@ public class AVLTree {
 		return 42;
 	}
 
-
-   // Search node with key 'k' and return THE NODE ITSELF, or null if didn't found - SAGI
-   public IAVLNode searchNode(int k){
-   	if (this.empty()){ // The tree is empty
-   		return null;
-	}
-   	IAVLNode curr = this.root;
-   	while (curr.isRealNode()){
-   		int currKey = curr.getKey();
-		if (currKey == k){
-			return curr;
-		} else if (currKey > k){
-			curr = curr.getLeft();
-		} else if (currKey < k){
-			curr = curr.getRight();
-		}
-	}
-   	// We arrived virtual node, thus node does not exist in tree
-   	return null;
-   }
-
    // By given root to a subtree, returns it's minimum node. - O(log(n))
    // if tree is empty, returns null
    public IAVLNode findMin(IAVLNode root) {
@@ -444,7 +435,7 @@ public class AVLTree {
 	 */
 
 	private void keysInorderTraversal(int[]arr, IAVLNode root) {
-		if(root != null) {
+		if(root.isRealNode()) {
 			keysInorderTraversal(arr, root.getLeft());
 			arr[this.pos] = root.getKey();
 			this.pos++;
@@ -479,7 +470,7 @@ public class AVLTree {
 	 */
 
 	private void infoInorderTraversal(String[] arr, IAVLNode root) {
-		if(root != null) {
+		if(root.isRealNode()) {
 			infoInorderTraversal(arr, root.getLeft());
 			arr[this.pos] = root.getValue();
 			this.pos++;
