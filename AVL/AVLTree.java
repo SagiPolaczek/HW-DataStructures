@@ -357,7 +357,7 @@ public class AVLTree {
                 count++;
                 rotateLeft(node);
                 count++;
-                node = node.getParent();
+                node = node.getParent().getParent();
                 return deleteRebalance(node, count);
             }
 
@@ -379,7 +379,7 @@ public class AVLTree {
             if (childDLeft == 2 && childDRight == 1) {
                 rotateLeft(node.getLeft());
                 rotateRight(node);
-                node = node.getParent();
+                node = node.getParent().getParent();
                 count += 6;
                 return deleteRebalance(node, count);
             }
@@ -619,7 +619,7 @@ public class AVLTree {
         }
         IAVLNode currNode;
         // keys(x,t) < keys()
-        if (x.getKey() > this.root.getKey()) {
+        if (x.getKey() < this.root.getKey()) {
 
             // keys(x,t) < keys() and rankT1 >= rankT2
             if (this.root.getHeight() >= t.root.getHeight()) {
@@ -714,7 +714,14 @@ public class AVLTree {
 
         }
 
-        insertRebalance(x, 0);
+        x.updateHeight();
+        while (x != null) {
+            x.updateHeight();
+            insertRebalance(x, 0);
+            deleteRebalance(x, 0);
+            x = x.getParent();
+        }
+
         return Math.abs(t.root.getHeight() - this.root.getHeight()) + 1;
     }
 
