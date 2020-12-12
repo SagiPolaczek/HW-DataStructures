@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class printableTree extends AVLTree {
     //you should implement IAVLnode
@@ -116,17 +115,5 @@ public class printableTree extends AVLTree {
     public String getText(IAVLNode node){
         return "" + node.getKey();
 
-    }
-
-    public static void main(String[] args) {
-        int n = 25;
-        printableTree tree = new printableTree();
-        Random rand = new Random();
-        for(int i=0 ; i<n ; i++) {
-            int val = rand.nextInt(n);
-            String info = Integer.toString(val);
-            tree.insert(val, info);
-        }
-        tree.printTree();
     }
 }
