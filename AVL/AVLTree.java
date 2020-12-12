@@ -200,14 +200,14 @@ public class AVLTree {
                 int[]rankDiffL = node.getLeft().rankDifference();
                 if(rankDiffL[0] == 1) { // case 2
                     rotateRight(node);
-                    node = node.getParent();
+                    node = node.getParent().getParent();
                     balanceCnt+=2;
                     return insertRebalance(node, balanceCnt);
                 }
                 else if(rankDiffL[0] == 2) { // case 3
                     rotateLeft(node.getLeft());
                     rotateRight(node);
-                    node = node.getParent();
+                    node = node.getParent().getParent();
                     balanceCnt+=3;
                     return insertRebalance(node, balanceCnt);
                 }
@@ -216,18 +216,19 @@ public class AVLTree {
                 int[]rankDiffR = node.getRight().rankDifference();
                 if(rankDiffR[1] == 1) { // case 2
                     rotateLeft(node);
-                    node = node.getParent();
+                    node = node.getParent().getParent();
                     balanceCnt+=2;
                     return insertRebalance(node, balanceCnt);
                 }
                 else if(rankDiffR[1] == 2) { // case 3
                     rotateRight(node.getRight());
                     rotateLeft(node);
-                    node = node.getParent();
+                    node = node.getParent().getParent();
                     balanceCnt+=3;
                     return insertRebalance(node, balanceCnt);
                 }
             }
+
         }
         return 42;
     }
@@ -610,6 +611,7 @@ public class AVLTree {
      * postcondition: none
      */
     public int join(IAVLNode x, AVLTree t) {
+
         int rankT1 = this.root.getHeight();
         int rankT2 = t.root.getHeight();
         // Both trees are empty
@@ -621,12 +623,12 @@ public class AVLTree {
         if (this.empty()) {
             t.insert(x.getKey(), x.getValue());
             this.makeCopyOf(t);
-            return t.root.getHeight() + 2;
+            return rankT2 + 2;
         }
         // t is empty, this not.
         if (t.empty()) {
             this.insert(x.getKey(), x.getValue());
-            return this.root.getHeight() + 2;
+            return rankT1 + 2;
         }
         IAVLNode currNode;
         // keys(x,t) < keys()
@@ -726,14 +728,9 @@ public class AVLTree {
         }
 
         x.updateHeight();
-        while (x != null) {
-            x.updateHeight();
-            insertRebalance(x, 0);
-            deleteRebalance(x, 0);
-            x = x.getParent();
-        }
+        insertRebalance(x.getParent(),0);
 
-        return Math.abs(t.root.getHeight() - this.root.getHeight()) + 1;
+        return Math.abs(rankT1 - rankT2) + 1;
     }
 
     // Make this tree a shallow copy of another tree.
@@ -745,6 +742,7 @@ public class AVLTree {
         this.size = t.size;
         this.pos = t.pos;
     }
+
 
     /**
      * public interface IAVLNode
@@ -927,4 +925,3 @@ public class AVLTree {
         }
     }
 }
-
