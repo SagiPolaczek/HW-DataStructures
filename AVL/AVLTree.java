@@ -805,10 +805,6 @@ public class AVLTree {
 
         public int getSize();        // return size -SAGI
 
-        public void promoteSize();  // promote size -SAGI
-
-        public void demoteSize();   // demote size -SAGI
-
         public void updateSize();   // update size -SAGI
     }
 
@@ -924,14 +920,6 @@ public class AVLTree {
 
         public int getSize() {
             return this.size;
-        }
-
-        public void promoteSize() {
-            this.size++;
-        }
-
-        public void demoteSize() {
-            this.size--;
         }
 
         public void updateSize() {
