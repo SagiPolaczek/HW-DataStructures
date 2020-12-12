@@ -229,13 +229,13 @@ public class AVLTree {
     public int delete(int k) // - SAGI
     {
         IAVLNode target = searchNode(k);
-        if (target == null) {  // Node was not found
+        if (target == null) {  // Node was not found, O(log(n))
             return -1;
         }
 
         // Check if target node isn't a leaf or an unary node
-        // If true, replace it with his successor, and then delete the successor,
-        // 										which must be leaf or unary.
+        // If true, replace it with it's successor, and then delete the successor,
+        // 										                    which must be leaf or unary.
         if (target.getLeft().isRealNode() && target.getRight().isRealNode()) {
             // Going right and all the way left.
             IAVLNode targetSuc = target.getRight();
@@ -243,7 +243,7 @@ public class AVLTree {
                 targetSuc = target.getLeft();
             }
             // targetSuc is indeed the target's successor
-            // Replacing by changing key and value, instead pointers.
+            // Replacing by changing key and value, instead of naively changing pointers.
             target.setValue(targetSuc.getValue());
             target.setKey(targetSuc.getKey());
 
@@ -258,28 +258,29 @@ public class AVLTree {
                 this.root = null;
             } else if (target.getLeft().isRealNode()) { // Target's real node is on his left
                 this.root = target.getLeft();
-            } else {                                   // Target's real node is on his right
+                this.root.setParent(null); // Updating root's parent to null.
+            } else {                                    // Target's real node is on his right
                 this.root = target.getRight();
+                this.root.setParent(null); // Updating root's parent to null.
             }
-            this.root.setParent(null);    // Updating root's parent to null.
         }
 
-        // CASE A - target is a leaf node
+        // CASE A - target is a leaf node (and not a root)
         else if (target.isLeaf()) {
             IAVLNode replaceNode = new AVLNode();
             replaceNode.setParent(targetParent);
             if (targetParent.getLeft().getKey() == target.getKey()) { // target is his parent left child
                 targetParent.setLeft(replaceNode);
-            } else { // target is his parent right child
+            } else {                                                  // target is his parent right child
                 targetParent.setRight(replaceNode);
             }
 
-            // CASE B - target is an unary node
+            // CASE B - target is an unary node (and not a root)
         } else {
             IAVLNode replaceNode;
-            if (target.getLeft().isRealNode()) {                     // Target's real node is on his left
+            if (target.getLeft().isRealNode()) {                      // Target's real node is on his left
                 replaceNode = target.getLeft();
-            } else {                                                 // Target's real node is on his right
+            } else {                                                  // Target's real node is on his right
                 replaceNode = target.getRight();
             }
             replaceNode.setParent(targetParent);
@@ -292,32 +293,39 @@ public class AVLTree {
 
         // Need to update SIZE, MIN, MAX
         this.size--;                    // O(1)
-        this.min = findMin(root);    // O(log(n))
-        this.max = findMax(root);    // O(log(n))
+        this.min = findMin(root);       // O(log(n))
+        this.max = findMax(root);       // O(log(n))
 
         // Update size for all relevant nodes
-        updatePathSize(targetParent);
+        updatePathSize(targetParent);   // O(log(n))
 
         // After the deletion, now its time to rebalance the tree and return the amount of operations executed.
         int count = 0;
-        return deleteRebalance(targetParent, count);
+        return deleteRebalance(targetParent, count); // O(log(n))
     }
 
-    // Rebalancing after deletion.
+
+    // Rebalancing after deletion using Cases and rotations.
+    // The amount of work is linear to the tree height, because the method does constant time in each call,
+    //                                                 and we call it each time we climb from a node to his parent.
+    // AVL is a BBST and thus time complexity is O(log(n)).
     public int deleteRebalance(IAVLNode node, int count) {
 
-        // Out of tree, thus we done.
+        // Out of tree - Final Case
         if (node == null) {
             return count;
         }
+
         int[] rankDiff = node.rankDifference();
         int dLeft = rankDiff[0];
         int dRight = rankDiff[1];
 
-        // Node is balanced
-        if ((dLeft == 2 && dRight == 1) || (dLeft == 1 && dRight == 2)) {
+        // Node is balanced - Final Case
+        if ((dLeft == 2 && dRight == 1) || (dLeft == 1 && dRight == 2) || (dLeft == 1 && dRight == 1)) {
             return count;
         }
+
+
         // Demote (Case 1)
         if (dLeft == 2 && dRight == 2) {
             node.demoteNode();
@@ -325,6 +333,7 @@ public class AVLTree {
             node = node.getParent();
             return deleteRebalance(node, count);
         }
+        // Part 1 of Symmetry
         if (dLeft == 3 && dRight == 1) {
             int[] childRankDiff = node.getRight().rankDifference();
             int childDLeft = childRankDiff[0];
@@ -348,6 +357,7 @@ public class AVLTree {
             }
 
         }
+        // Part 2 of Symmetry
         if (dLeft == 1 && dRight == 3) {
             int[] childRankDiff = node.getLeft().rankDifference();
             int childDLeft = childRankDiff[0];
@@ -369,13 +379,15 @@ public class AVLTree {
                 return deleteRebalance(node, count);
             }
         }
+        // The Answer to the Ultimate Question of Life, the Universe, and Everything
+        // Never gets here.
         return 42;
     }
 
     // By given root to a subtree, returns it's minimum node. - O(log(n))
     // if tree is empty, returns null
     public IAVLNode findMin(IAVLNode root) {
-        if (this.empty()) {
+        if (root == null || (!root.isRealNode())) {
             return null;
         }
         IAVLNode curr = root;
@@ -388,7 +400,7 @@ public class AVLTree {
     // By given root to a subtree, returns it's maximum node. - O(log(n))
     // if tree is empty, return null
     public IAVLNode findMax(IAVLNode root) {
-        if (this.empty()) {
+        if (root == null || (!root.isRealNode())) {
             return null;
         }
         IAVLNode curr = root;
@@ -397,6 +409,7 @@ public class AVLTree {
         }
         return curr;
     }
+
 
     public void updatePathSize(IAVLNode node) {
         IAVLNode curr = node;
