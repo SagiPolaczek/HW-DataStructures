@@ -69,47 +69,43 @@ public class AVLTree {
      * returns -1 if an item with key k already exists in the tree.
      */
     public int insert(int k, String i) {
-        // New node with relevant values
-        IAVLNode node = new AVLNode(k, i);
-
-        // Case when tree is empty
-        if (this.root == null) {
-            this.root = node;
-            this.min = node;
-            this.max = node;
-            this.size++;
+        AVLTree.IAVLNode node = new AVLTree.AVLNode(k,i);
+        if(root == null) {
+            root = node;
+            min = node;
+            max = node;
             return 0;
         }
-
-        IAVLNode parent = searchPosition(k);
-        if (parent == null) {
+        AVLTree.IAVLNode parent = searchPosition(k);
+        if(parent == null) {
             return -1;
         }
-        // Update min, max if needed
-        if (k < min.getKey()) {
+        //System.out.println("parent key="+parent.getKey());
+        boolean isLeaf = false;
+        if (parent.isLeaf()) {
+            isLeaf = true;
+        }
+        // update min, max if needed
+        if(k < min.getKey()) {
             min = node;
         }
-        if (k > max.getKey()) {
+        if(k > max.getKey()) {
             max = node;
         }
-
-        // Insert node to the tree
-        if (k < parent.getKey()) {
+        //System.out.println(k);
+        // insert node to the tree
+        if(k < parent.getKey()) {
             parent.setLeft(node);
-        } else { // k > parent.getKey()
+        }
+        else { // k > parent.getKey()
             parent.setRight(node);
         }
         node.setParent(parent);
-
-        // Update tree's size after insertion
-        this.size++;
+        this.size++; // update tree's size after insertion
         updatePathSize(node);
-        int balanceCnt = 1; // Since insert is also count as balance operation, we start to count from 1
-
-        // Check if case A, since if it's case B we don't need to do anything else
-		// (Case A - after insertion parent node has two children,  else - Case B)
-        if (parent.getRight() == null || parent.getLeft() == null) {
-            parent.setHeight(parent.getHeight() + 1); // promote
+        int balanceCnt = 1; // since insert is also count as balance operation, we start to count from 1
+        //check if case A, since if it's case B we don't need to do anything else
+        if(isLeaf) {
             balanceCnt = insertRebalance(parent, 1);
         }
         return balanceCnt;
@@ -154,6 +150,9 @@ public class AVLTree {
         rightNode.updateHeight();
         root.updateSize();
         rightNode.updateSize();
+        if(parent == null) {
+            this.root = rightNode;
+        }
     }
 
     private void rotateRight(IAVLNode root) {
@@ -177,43 +176,49 @@ public class AVLTree {
         leftNode.updateHeight();
         root.updateSize();
         leftNode.updateSize();
+        if(parent == null) {
+            this.root = leftNode;
+        }
     }
 
     // in this function we can assume than node has two children since we had case B
-    private int insertRebalance(IAVLNode node, int balanceCnt) {
-        if (node == null) {
+    private int insertRebalance(AVLTree.IAVLNode node, int balanceCnt){
+        if(node == null) {
             return balanceCnt;
         }
-        int leftRankDiff = node.getHeight() - node.getLeft().getHeight();
-        int rightRankDiff = node.getHeight() - node.getRight().getHeight();
-        // case 1
-        if ((leftRankDiff == 0 && rightRankDiff == 1) || (leftRankDiff == 1 && rightRankDiff == 0)) { // promote & up
-            node.setHeight(node.getHeight() + 1);
-            insertRebalance(node.getParent(), balanceCnt + 1); // add 1 for promote
+        int[] rankDiff = node.rankDifference();
+        //System.out.println(Arrays.toString(rankDiff));
+        if((rankDiff[0]==0 && rankDiff[1]==1) || (rankDiff[0]==1 && rankDiff[1]==0)){ //case1
+            node.promoteNode();
+            insertRebalance(node.getParent(), balanceCnt+2);
         }
-        // notice that if we are here then case 2 or case 3 will finish the balancing
-        int[] rankDiffC = node.rankDifference();
-        int[] rankDiffL = node.getLeft().rankDifference();
-        int[] rankDiffR = node.getRight().rankDifference();
-        // case 2
-        if (rankDiffC[0] == 0 && rankDiffL[0] == 1) {
-            this.rotateRight(node);
-            return balanceCnt + 2; // add 1 for rotation & 1 for demote
-        } else if (rankDiffC[1] == 0 && rankDiffR[1] == 0) {
-            this.rotateLeft(node);
-            return balanceCnt + 2; // add 1 for rotation & 1 for demote
+        if((rankDiff[0]==0 && rankDiff[1]==2) || (rankDiff[0]==2 && rankDiff[1]==0)) { //case 2 or 3
+            if(rankDiff[0] == 0) {
+                int[]rankDiffL = node.getLeft().rankDifference();
+                if(rankDiffL[0] == 1) { // case 2
+                    rotateRight(node);
+                    return insertRebalance(node.getParent(), balanceCnt+2);
+                }
+                else if(rankDiffL[0] == 2) { // case 3
+                    rotateLeft(node.getLeft());
+                    rotateRight(node);
+                    return insertRebalance(node.getParent(), balanceCnt+5);
+                }
+            }
+            if(rankDiff[1] == 0) {
+                int[]rankDiffR = node.getRight().rankDifference();
+                if(rankDiffR[1] == 1) { // case 2
+                    rotateLeft(node);
+                    return insertRebalance(node.getParent(), balanceCnt+2);
+                }
+                else if(rankDiffR[1] == 2) { // case 3
+                    rotateRight(node.getRight());
+                    rotateLeft(node);
+                    return insertRebalance(node.getParent(), balanceCnt+5);
+                }
+            }
         }
-        // case 3
-        if (rankDiffC[0] == 0 && rankDiffL[0] == 2) {
-            this.rotateLeft(node.getLeft());
-            this.rotateRight(node);
-            return balanceCnt + 5; // add 2 for rotation & 2 for demote & 1 for promote
-        } else if (rankDiffC[1] == 0 && rankDiffR[1] == 2) {
-            this.rotateRight(node.getRight());
-            this.rotateLeft(node);
-            return balanceCnt + 5; // add 2 for rotation & 2 for demote & 1 for promote
-        }
-        return 0; //NEVER GET HERE
+        return insertRebalance(node.getParent(), balanceCnt);
     }
 
 
@@ -240,7 +245,7 @@ public class AVLTree {
             // Going right and all the way left.
             IAVLNode targetSuc = target.getRight();
             while (targetSuc.getLeft().isRealNode()) {
-                targetSuc = target.getLeft();
+                targetSuc = targetSuc.getLeft();
             }
             // targetSuc is indeed the target's successor
             // Replacing by changing key and value, instead of naively changing pointers.
