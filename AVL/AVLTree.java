@@ -13,8 +13,9 @@ public class AVLTree {
      * min, max - indicates the AVLnodes in our tree with the min,max keys
      */
 
-    IAVLNode root, min, max;
-    int size, pos;
+    // Initialize variables to default
+    IAVLNode root, min, max;   // null
+    int size, pos;             // 0
 
     /**
      * public boolean empty()
@@ -45,6 +46,7 @@ public class AVLTree {
             return null;
         }
         IAVLNode curr = this.root;
+        // Preforming Binary Search as usual
         while (curr.isRealNode()) {
             int currKey = curr.getKey();
             if (currKey == k) {
@@ -327,6 +329,7 @@ public class AVLTree {
     // The amount of work is linear to the tree height, because the method does constant time in each call,
     //                                                 and we call it each time we climb from a node to his parent.
     // AVL is a BBST and thus time complexity is O(log(n)).
+    // At start receive 0 as count and increase it recursively.
     public int deleteRebalance(IAVLNode node, int count) {
 
         // Out of tree - Final Case
@@ -384,7 +387,7 @@ public class AVLTree {
             // Single Rotation (Case 2 and Case 3)
             if ((childDLeft == 1 && childDRight == 1) || (childDLeft == 1 && childDRight == 2)) {
                 rotateRight(node);
-                count += 3;
+                count += 3; // One Rotation, one demotion and one promotion
                 node = node.getParent().getParent();
                 return deleteRebalance(node, count);
             }
@@ -393,7 +396,7 @@ public class AVLTree {
                 rotateLeft(node.getLeft());
                 rotateRight(node);
                 node = node.getParent().getParent();
-                count += 6;
+                count += 6; // Two rotations, Three demotions, One promotion
                 return deleteRebalance(node, count);
             }
         }
@@ -428,12 +431,13 @@ public class AVLTree {
         return curr;
     }
 
-
+    // Given node, update his size using updateSize() which sum his two children size +1,
+    // Then updating all his parents' sizes including the root.
     public void updatePathSize(IAVLNode node) {
         IAVLNode curr = node;
-        while (curr != null) {
-            curr.updateSize();
-            curr = curr.getParent();
+        while (curr != null) {       // while did not pass the root
+            curr.updateSize();       // update size
+            curr = curr.getParent(); // climb up
         }
     }
 
@@ -644,6 +648,7 @@ public class AVLTree {
     public int join(IAVLNode x, AVLTree t) {
 
         // Both trees are empty
+        // Equivalent to new tree with x as a single node
         if (this.empty() && t.empty()) {
             this.insert(x.getKey(), x.getValue());
             return 1;
@@ -651,6 +656,7 @@ public class AVLTree {
 
 
         // this is empty, t not.
+        // Equivalent to add x to t and make this point to t.
         if (this.empty()) {
             int rankT2 = t.root.getHeight();
             t.insert(x.getKey(), x.getValue());
@@ -658,11 +664,13 @@ public class AVLTree {
             return rankT2 + 2;
         }
         // t is empty, this not.
+        // Equivalent to add x to this.
         if (t.empty()) {
             int rankT1 = this.root.getHeight();
             this.insert(x.getKey(), x.getValue());
             return rankT1 + 2;
         }
+        // Calculate ranks to return ( |rank(this) - rank(t)| + 1 )
         int rankT1 = this.root.getHeight();
         int rankT2 = t.root.getHeight();
         IAVLNode currNode;
@@ -670,6 +678,7 @@ public class AVLTree {
         if (x.getKey() < this.root.getKey()) {
 
             // keys(x,t) < keys() and rankT1 >= rankT2
+            // 'this' is higher than 't', thus we'll start from this.root and go down.
             if (this.root.getHeight() >= t.root.getHeight()) {
                 currNode = this.root;
                 while (currNode.getHeight() > t.root.getHeight()) {
@@ -684,7 +693,8 @@ public class AVLTree {
                     x.getParent().setLeft(x);
                 }
 
-                // Defining this tree as the new one
+                // Defining this tree as the new one in case that 'x' is above root,
+                //                                      possible if rankT1 == rankT2 for instance.
                 if (this.root.getParent() != null) {
                     this.root = this.root.getParent();
                 }
@@ -692,6 +702,7 @@ public class AVLTree {
             }
 
             // keys(x,t) < keys() and rankT1 < rankT2
+            // 't' is higher than 'this', thus we'll start from t.root and go down.
             else {
                 currNode = t.root;
                 while (currNode.getHeight() > this.root.getHeight()) {
@@ -705,10 +716,12 @@ public class AVLTree {
                 if (x.getParent() != null) {
                     x.getParent().setRight(x);
                 }
-                // Defining this tree as the new one
+                // Defining this tree as the new one in case that 'x' is above t.root.
                 if (t.root.getParent() != null) {
                     t.root = t.root.getParent();
                 }
+                // 't' is the complete tree after joining both, thus we need 'this' to copy t.
+                //                                                           Shallow copy is sufficient.
                 this.makeCopyOf(t);
             }
 
@@ -716,6 +729,7 @@ public class AVLTree {
         // keys(x,t) > keys()
         else {
             // keys(x,t) > keys() and rankT1 >= rankT2
+            // 'this' is higher than 't', thus we'll start from this.root and go down.
             if (this.root.getHeight() >= t.root.getHeight()) {
                 currNode = this.root;
                 while (currNode.getHeight() > t.root.getHeight()) {
@@ -730,7 +744,8 @@ public class AVLTree {
                     x.getParent().setRight(x);
                 }
 
-                // Defining this tree as the new one
+                // Defining this tree as the new one in case that 'x' is above root,
+                //                                      possible if rankT1 == rankT2 for instance.
                 if (this.root.getParent() != null) {
                     this.root = this.root.getParent();
                 }
@@ -739,6 +754,7 @@ public class AVLTree {
 
 
             // keys(x,t) > keys() and rankT1 < rankT2
+            // 't' is higher than 'this', thus we'll start from t.root and go down.
             else {
                 currNode = t.root;
                 while (currNode.getHeight() > this.root.getHeight()) {
@@ -753,16 +769,21 @@ public class AVLTree {
                     x.getParent().setLeft(x);
                 }
 
-                // Defining this tree as the new one
+                // Defining this tree as the new one in case that 'x' is above t.root.
                 if (t.root.getParent() != null) {
                     t.root = t.root.getParent();
                 }
+
+                // 't' is the complete tree after joining both, thus we need 'this' to copy t.
+                //                                                           Shallow copy is sufficient.
                 this.makeCopyOf(t);
             }
 
         }
-
+        // x's height need to be update after join.
         x.updateHeight();
+
+        // Rebalance the tree. InsertRebalnce is sufficient since it covers all the relevant cases.
         insertRebalance(x.getParent(),0);
 
         return Math.abs(rankT1 - rankT2) + 1;
