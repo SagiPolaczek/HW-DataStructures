@@ -22,7 +22,7 @@ public class AVLTree {
      * returns true if and only if the tree is empty
      */
     public boolean empty() {
-        return (size == 0);
+        return (this.root == null);
     }
 
     /**
@@ -71,9 +71,10 @@ public class AVLTree {
     public int insert(int k, String i) {
         AVLTree.IAVLNode node = new AVLTree.AVLNode(k,i);
         if(root == null) {
-            root = node;
-            min = node;
-            max = node;
+            this.root = node;
+            this.min = node;
+            this.max = node;
+            this.size++;
             return 0;
         }
         AVLTree.IAVLNode parent = searchPosition(k);
@@ -444,6 +445,9 @@ public class AVLTree {
      * or null if the tree is empty
      */
     public String min() {
+        if (this.empty()){
+            return null;
+        }
         return this.min.getValue();
     }
 
@@ -454,6 +458,9 @@ public class AVLTree {
      * or null if the tree is empty
      */
     public String max() {
+        if (this.empty()){
+            return null;
+        }
         return this.max.getValue();
     }
 
@@ -618,24 +625,28 @@ public class AVLTree {
      */
     public int join(IAVLNode x, AVLTree t) {
 
-        int rankT1 = this.root.getHeight();
-        int rankT2 = t.root.getHeight();
         // Both trees are empty
         if (this.empty() && t.empty()) {
             this.insert(x.getKey(), x.getValue());
             return 1;
         }
+
+
         // this is empty, t not.
         if (this.empty()) {
+            int rankT2 = t.root.getHeight();
             t.insert(x.getKey(), x.getValue());
             this.makeCopyOf(t);
             return rankT2 + 2;
         }
         // t is empty, this not.
         if (t.empty()) {
+            int rankT1 = this.root.getHeight();
             this.insert(x.getKey(), x.getValue());
             return rankT1 + 2;
         }
+        int rankT1 = this.root.getHeight();
+        int rankT2 = t.root.getHeight();
         IAVLNode currNode;
         // keys(x,t) < keys()
         if (x.getKey() < this.root.getKey()) {
