@@ -80,7 +80,6 @@ public class AVLTree {
         if(parent == null) {
             return -1;
         }
-        //System.out.println("parent key="+parent.getKey());
         boolean isLeaf = false;
         if (parent.isLeaf()) {
             isLeaf = true;
@@ -181,44 +180,56 @@ public class AVLTree {
         }
     }
 
-    // in this function we can assume than node has two children since we had case B
     private int insertRebalance(AVLTree.IAVLNode node, int balanceCnt){
         if(node == null) {
             return balanceCnt;
         }
         int[] rankDiff = node.rankDifference();
-        //System.out.println(Arrays.toString(rankDiff));
+        int dLeft = rankDiff[0], dRight = rankDiff[1];
+        if((rankDiff[0] == 1 && rankDiff[1] == 1) || (rankDiff[0] == 1 && rankDiff[1] == 2) || (rankDiff[0] == 2 && rankDiff[1] == 1)) {
+            return balanceCnt;
+        }
         if((rankDiff[0]==0 && rankDiff[1]==1) || (rankDiff[0]==1 && rankDiff[1]==0)){ //case1
             node.promoteNode();
-            insertRebalance(node.getParent(), balanceCnt+2);
+            node = node.getParent();
+            balanceCnt++;
+            return insertRebalance(node, balanceCnt);
         }
         if((rankDiff[0]==0 && rankDiff[1]==2) || (rankDiff[0]==2 && rankDiff[1]==0)) { //case 2 or 3
             if(rankDiff[0] == 0) {
                 int[]rankDiffL = node.getLeft().rankDifference();
                 if(rankDiffL[0] == 1) { // case 2
                     rotateRight(node);
-                    return insertRebalance(node.getParent(), balanceCnt+2);
+                    node = node.getParent();
+                    balanceCnt+=2;
+                    return insertRebalance(node, balanceCnt);
                 }
                 else if(rankDiffL[0] == 2) { // case 3
                     rotateLeft(node.getLeft());
                     rotateRight(node);
-                    return insertRebalance(node.getParent(), balanceCnt+5);
+                    node = node.getParent();
+                    balanceCnt+=3;
+                    return insertRebalance(node, balanceCnt);
                 }
             }
             if(rankDiff[1] == 0) {
                 int[]rankDiffR = node.getRight().rankDifference();
                 if(rankDiffR[1] == 1) { // case 2
                     rotateLeft(node);
-                    return insertRebalance(node.getParent(), balanceCnt+2);
+                    node = node.getParent();
+                    balanceCnt+=2;
+                    return insertRebalance(node, balanceCnt);
                 }
                 else if(rankDiffR[1] == 2) { // case 3
                     rotateRight(node.getRight());
                     rotateLeft(node);
-                    return insertRebalance(node.getParent(), balanceCnt+5);
+                    node = node.getParent();
+                    balanceCnt+=3;
+                    return insertRebalance(node, balanceCnt);
                 }
             }
         }
-        return insertRebalance(node.getParent(), balanceCnt);
+        return 42;
     }
 
 
