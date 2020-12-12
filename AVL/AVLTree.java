@@ -22,7 +22,7 @@ public class AVLTree {
      * <p>
      * returns true if and only if the tree is empty
      */
-    public boolean empty() {
+    public boolean empty() {  // Takes O(1) time
         return (this.root == null);
     }
 
@@ -32,16 +32,16 @@ public class AVLTree {
      * returns the info of an item with key k if it exists in the tree
      * otherwise, returns null
      */
-    public String search(int k) {
-        IAVLNode node = searchNode(k);
+    public String search(int k) { // Takes O(log(n)) time
+        IAVLNode node = searchNode(k); // This node will be with key 'k', if there is one in the tree. Otherwise it will be null
         if (node != null) {
             return node.getValue();
         }
         return null;
     }
 
-    // Search node with key 'k' and return THE NODE ITSELF, or null if didn't found - SAGI
-    public IAVLNode searchNode(int k) {
+    // Search node with key 'k' and return THE NODE ITSELF, or null if didn't found
+    public IAVLNode searchNode(int k) {  // Takes O(log(n)) time
         if (this.empty()) { // The tree is empty
             return null;
         }
@@ -70,7 +70,7 @@ public class AVLTree {
      * promotion/rotation - counted as one rebalnce operation, double-rotation is counted as 2.
      * returns -1 if an item with key k already exists in the tree.
      */
-    public int insert(int k, String i) {
+    public int insert(int k, String i) { // Takes O(log(n)) time
         AVLTree.IAVLNode node = new AVLTree.AVLNode(k,i);
         if(root == null) {
             this.root = node;
@@ -94,7 +94,6 @@ public class AVLTree {
         if(k > max.getKey()) {
             max = node;
         }
-        //System.out.println(k);
         // insert node to the tree
         if(k < parent.getKey()) {
             parent.setLeft(node);
@@ -115,9 +114,10 @@ public class AVLTree {
 
     // Look for k insertion position.
     // If found k, return null (nothing to insert), else return last node encountered.
-    private IAVLNode searchPosition(int k) {
+    // (similar to method implementation we saw in class)
+    private IAVLNode searchPosition(int k) { // Take O(log(n)) time
         IAVLNode curr = this.root, next = this.root;
-        while (next.isRealNode()) {
+        while (next.isRealNode()) { // when next reach to an unreal node, curr is in the position we need for insertion
             curr = next;
             if (next.getKey() == k) {
                 return null;
@@ -131,7 +131,9 @@ public class AVLTree {
         return curr;
     }
 
-    private void rotateLeft(IAVLNode root) {
+    // Rotate root node & its right child to the left
+    // (after left rotation, root is the left child of the node that was its right child before rotation)
+    private void rotateLeft(IAVLNode root) { // Takes O(1) time
         IAVLNode parent = root.getParent();
         IAVLNode rightNode = root.getRight();
         root.setRight(rightNode.getLeft());
@@ -157,7 +159,9 @@ public class AVLTree {
         }
     }
 
-    private void rotateRight(IAVLNode root) {
+    // Rotate root node & its left child to the right
+    // (after right rotation, root is the right child of the node that was its left child before rotation)
+    private void rotateRight(IAVLNode root) {  // Takes O(1) time
         IAVLNode parent = root.getParent();
         IAVLNode leftNode = root.getLeft();
         root.setLeft(leftNode.getRight());
@@ -183,23 +187,29 @@ public class AVLTree {
         }
     }
 
-    private int insertRebalance(AVLTree.IAVLNode node, int balanceCnt){
+    // Rebalancing after insertion using cases and rotations.
+    // Returns the number of operations required to balance the tree.
+    // At start receive 1 as count (we count insert as one operation) and increase it recursively.
+    private int insertRebalance(AVLTree.IAVLNode node, int balanceCnt){ // Takes O(log(n)) time
         if(node == null) {
             return balanceCnt;
         }
         int[] rankDiff = node.rankDifference();
         int dLeft = rankDiff[0], dRight = rankDiff[1];
-        if((rankDiff[0] == 1 && rankDiff[1] == 1) || (rankDiff[0] == 1 && rankDiff[1] == 2) || (rankDiff[0] == 2 && rankDiff[1] == 1)) {
+        // When we reach node (1,1) or (1,2) or (2,1) the tree is balanced
+        if((dLeft == 1 && dRight == 1) || (dLeft == 1 && dRight == 2) || (dLeft == 2 && dRight == 1)) {
             return balanceCnt;
         }
-        if((rankDiff[0]==0 && rankDiff[1]==1) || (rankDiff[0]==1 && rankDiff[1]==0)){ //case1
+        // If the node is (1,0) or (0,1), we promote the node and move the problem up (case 1)
+        if((dLeft==0 && dRight==1) || (dLeft==1 && dRight==0)){ //case1
             node.promoteNode();
             node = node.getParent();
             balanceCnt++;
             return insertRebalance(node, balanceCnt);
         }
-        if((rankDiff[0]==0 && rankDiff[1]==2) || (rankDiff[0]==2 && rankDiff[1]==0)) { //case 2 or 3
-            if(rankDiff[0] == 0) {
+        // If the node is (2,0) or (0,2), we need to rotate the node once (case 2- single rotation) or twice (case 3- double rotation)
+        if((dLeft==0 && dRight==2) || (dLeft==2 && dRight==0)) { //case 2 or 3
+            if(dLeft == 0) {
                 int[]rankDiffL = node.getLeft().rankDifference();
                 if(rankDiffL[0] == 1) { // case 2
                     rotateRight(node);
@@ -215,7 +225,7 @@ public class AVLTree {
                     return insertRebalance(node, balanceCnt);
                 }
             }
-            if(rankDiff[1] == 0) {
+            if(dRight == 0) {
                 int[]rankDiffR = node.getRight().rankDifference();
                 if(rankDiffR[1] == 1) { // case 2
                     rotateLeft(node);
@@ -231,7 +241,6 @@ public class AVLTree {
                     return insertRebalance(node, balanceCnt);
                 }
             }
-
         }
         return 42;
     }
@@ -246,7 +255,7 @@ public class AVLTree {
      * demotion/rotation - counted as one rebalnce operation, double-rotation is counted as 2.
      * returns -1 if an item with key k was not found in the tree.
      */
-    public int delete(int k) // - SAGI
+    public int delete(int k) // Takes O(log(n)) time
     {
         IAVLNode target = searchNode(k);
         if (target == null) {  // Node was not found, O(log(n))
@@ -474,13 +483,15 @@ public class AVLTree {
      * Returns a sorted array which contains all keys in the tree,
      * or an empty array if the tree is empty.
      */
-    public int[] keysToArray() {
+    public int[] keysToArray() { // Takes O(n) time
         if (size == 0) {         // Tree is empty
             return new int[0]; // Return an empty array
         }
         int[] result = new int[size];
         IAVLNode runner = this.root;
-        keysInorderTraversal(result, runner);
+        keysInorderTraversal(result, runner); // insert all keys to result array, using inorder traversal over the tree
+        // We use pos as the array's current index to insert values while using keysInorderTraversal method.
+        // Therefore, each time we call this method we want pos to be equal to 0.
         this.pos = 0;
         return result;
     }
@@ -492,7 +503,9 @@ public class AVLTree {
      * using inorder traversal.
      */
 
-    private void keysInorderTraversal(int[] arr, IAVLNode root) {
+    // Inorder traversal over AVL tree
+    // While traversing the tree, we will insert the key values of the nodes in the tree into the array arr
+    private void keysInorderTraversal(int[] arr, IAVLNode root) { // Takes O(n) time
         if (root.isRealNode()) {
             keysInorderTraversal(arr, root.getLeft());
             arr[this.pos] = root.getKey();
@@ -508,13 +521,15 @@ public class AVLTree {
      * sorted by their respective keys,
      * or an empty array if the tree is empty.
      */
-    public String[] infoToArray() {
+    public String[] infoToArray() { // Takes O(n) time
         if (size == 0) {         // Tree is empty
             return new String[0]; // Return an empty array
         }
         String[] result = new String[size];
         IAVLNode runner = this.root;
         infoInorderTraversal(result, runner);
+        // We use pos as the array's current index to insert values while using keysInorderTraversal method.
+        // Therefore, each time we call this method we want pos to be equal to 0.
         this.pos = 0;
         return result;
     }
@@ -526,7 +541,9 @@ public class AVLTree {
      * using inorder traversal.
      */
 
-    private void infoInorderTraversal(String[] arr, IAVLNode root) {
+    // Inorder traversal over AVL tree
+    // While traversing the tree, we will insert the string values of the nodes in the tree into the array arr
+    private void infoInorderTraversal(String[] arr, IAVLNode root) { // Takes O(n) time
         if (root.isRealNode()) {
             infoInorderTraversal(arr, root.getLeft());
             arr[this.pos] = root.getValue();
@@ -543,7 +560,7 @@ public class AVLTree {
      * precondition: none
      * postcondition: none
      */
-    public int size() {
+    public int size() { // Takes O(1) time
         return this.size;
     }
 
@@ -555,7 +572,7 @@ public class AVLTree {
      * precondition: none
      * postcondition: none
      */
-    public IAVLNode getRoot() {
+    public IAVLNode getRoot() { // Takes O(1) time
         return this.root;
     }
 
