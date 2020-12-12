@@ -565,54 +565,72 @@ public class AVLTree {
      */
     public AVLTree[] split(int x) {
         AVLTree[] splitted = new AVLTree[2];
-        IAVLNode xNode = searchNode(x);
-        // set root,size values for each subtree
         splitted[0] = new AVLTree();
-        splitted[0].root = xNode.getLeft();
-        splitted[0].size = xNode.getLeft().getSize();
-        splitted[0].root.setParent(null);
         splitted[1] = new AVLTree();
-        splitted[1].root = xNode.getRight();
-        splitted[1].size = xNode.getRight().getSize();
-        splitted[1].root.setParent(null);
-        xNode.setLeft(new AVLNode());
-        xNode.setRight(new AVLNode());
-        xNode.updateHeight();
-        xNode.updateSize();
-        // split
-        IAVLNode child = xNode, parent = child;
-        while (child.getParent() != null) {
-            parent = child.getParent();
-            AVLTree temp = new AVLTree();
-            if (parent.getLeft() == child) {
-                parent.setLeft(new AVLNode());
-                temp.root = parent.getRight();
-                temp.size = parent.getRight().getSize();
-                parent.setRight(new AVLNode());
-            } else { // child is right child of parent
-                parent.setRight(new AVLNode());
-                temp.root = parent.getLeft();
-                temp.size = parent.getLeft().getSize();
-                parent.setLeft(new AVLNode());
-            }
-            temp.root.setParent(null);
-            child.setParent(null);
-            IAVLNode parentClone = new AVLNode(parent.getKey(), parent.getValue());
-            if (parent.getKey() < x) {
-                splitted[0].join(parentClone, temp);
-            } else {
-                splitted[1].join(parentClone, temp);
-            }
-            parent.updateHeight();
-            parent.updateSize();
-            child = parent;
+        IAVLNode node = searchNode(x);
+        if(x == this.min.getKey()) {
+            this.delete(x);
+            splitted[1] = this;
         }
-        // set min,max values for each subtree
+        else if(x == this.max.getKey()) {
+            this.delete(x);
+            splitted[0] = this;
+        }
+        else {
+            // set root,size values for each subtree
+            setRootSizeValues(splitted, node);
+            node.setLeft(new AVLNode());
+            node.setRight(new AVLNode());
+            node.updateHeight();
+            node.updateSize();
+            // split
+            IAVLNode child = node, parent = child;
+            while (child.getParent() != null) {
+                parent = child.getParent();
+                AVLTree temp = new AVLTree();
+                if (parent.getLeft() == child) {
+                    parent.setLeft(new AVLNode());
+                    temp.root = parent.getRight();
+                    temp.size = parent.getRight().getSize();
+                    parent.setRight(new AVLNode());
+                } else { // child is right child of parent
+                    parent.setRight(new AVLNode());
+                    temp.root = parent.getLeft();
+                    temp.size = parent.getLeft().getSize();
+                    parent.setLeft(new AVLNode());
+                }
+                temp.root.setParent(null);
+                child.setParent(null);
+                IAVLNode parentClone = new AVLNode(parent.getKey(), parent.getValue());
+                if (parent.getKey() < x) {
+                    splitted[0].join(parentClone, temp);
+                } else {
+                    splitted[1].join(parentClone, temp);
+                }
+                parent.updateHeight();
+                parent.updateSize();
+                child = parent;
+            }
+            // set min,max values for each subtree
+            setMinMaxValues(splitted);
+        }
+        return splitted;
+    }
+
+    private void setRootSizeValues(AVLTree[] splitted, IAVLNode node) {
+        splitted[0].root = node.getLeft();
+        splitted[0].size = node.getLeft().getSize();
+        splitted[0].root.setParent(null);
+        splitted[1].root = node.getRight();
+        splitted[1].size = node.getRight().getSize();
+        splitted[1].root.setParent(null);
+    }
+
+    private void setMinMaxValues(AVLTree[] splitted) {
         splitted[0].min = findMin(splitted[0].root);
         splitted[0].max = findMax(splitted[0].root);
         splitted[1].min = findMin(splitted[1].root);
         splitted[1].max = findMax(splitted[1].root);
-        return splitted;
     }
 
     /**
