@@ -559,9 +559,6 @@ public class AVLTree {
     public AVLTree[] split(int x) {
         AVLTree[] splitted = new AVLTree[2];
         IAVLNode xNode = searchNode(x);
-        if(xNode == null) {
-            return null;
-        }
         // set root,size values for each subtree
         splitted[0] = new AVLTree();
         splitted[0].root = xNode.getLeft();
@@ -593,10 +590,11 @@ public class AVLTree {
             }
             temp.root.setParent(null);
             child.setParent(null);
+            IAVLNode parentClone = new AVLNode(parent.getKey(), parent.getValue());
             if (parent.getKey() < x) {
-                splitted[0].join(parent, temp);
+                splitted[0].join(parentClone, temp);
             } else {
-                splitted[1].join(parent, temp);
+                splitted[1].join(parentClone, temp);
             }
             parent.updateHeight();
             parent.updateSize();
