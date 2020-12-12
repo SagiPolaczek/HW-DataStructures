@@ -556,34 +556,40 @@ public class AVLTree {
      * precondition: search(x) != null (i.e. you can also assume that the tree is not empty)
      * postcondition: none
      */
-    public AVLTree[] split(int x) //CHECK WHAT ABOUT PARENT POINTERS
-    {
+    public AVLTree[] split(int x) {
         AVLTree[] splitted = new AVLTree[2];
         IAVLNode xNode = searchNode(x);
+        if(xNode == null) {
+            return null;
+        }
         // set root,size values for each subtree
+        splitted[0] = new AVLTree();
         splitted[0].root = xNode.getLeft();
         splitted[0].size = xNode.getLeft().getSize();
         splitted[0].root.setParent(null);
+        splitted[1] = new AVLTree();
         splitted[1].root = xNode.getRight();
         splitted[1].size = xNode.getRight().getSize();
         splitted[1].root.setParent(null);
-        xNode.setLeft(null);
-        xNode.setRight(null);
+        xNode.setLeft(new AVLNode());
+        xNode.setRight(new AVLNode());
+        xNode.updateHeight();
+        xNode.updateSize();
         // split
         IAVLNode child = xNode, parent = child;
         while (child.getParent() != null) {
             parent = child.getParent();
             AVLTree temp = new AVLTree();
             if (parent.getLeft() == child) {
-                parent.setLeft(null);
+                parent.setLeft(new AVLNode());
                 temp.root = parent.getRight();
                 temp.size = parent.getRight().getSize();
-                parent.setRight(null);
+                parent.setRight(new AVLNode());
             } else { // child is right child of parent
-                parent.setRight(null);
+                parent.setRight(new AVLNode());
                 temp.root = parent.getLeft();
                 temp.size = parent.getLeft().getSize();
-                parent.setLeft(null);
+                parent.setLeft(new AVLNode());
             }
             temp.root.setParent(null);
             child.setParent(null);
@@ -592,6 +598,8 @@ public class AVLTree {
             } else {
                 splitted[1].join(parent, temp);
             }
+            parent.updateHeight();
+            parent.updateSize();
             child = parent;
         }
         // set min,max values for each subtree
