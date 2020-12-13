@@ -339,7 +339,7 @@ public class AVLTree {
     //                                                 and we call it each time we climb from a node to his parent.
     // AVL is a BBST and thus time complexity is O(log(n)).
     // At start receive 0 as count and increase it recursively.
-    public int deleteRebalance(IAVLNode node, int count) {
+    public int deleteRebalance(IAVLNode node, int count) { // Takes O(log(n)) time.
 
         // Out of tree - Final Case
         if (node == null) {
@@ -416,7 +416,7 @@ public class AVLTree {
 
     // By given root to a subtree, returns it's minimum node. - O(log(n))
     // if tree is empty, returns null
-    public IAVLNode findMin(IAVLNode root) {
+    public IAVLNode findMin(IAVLNode root) { // O(log(n))
         if (root == null || (!root.isRealNode())) {
             return null;
         }
@@ -429,7 +429,7 @@ public class AVLTree {
 
     // By given root to a subtree, returns it's maximum node. - O(log(n))
     // if tree is empty, return null
-    public IAVLNode findMax(IAVLNode root) {
+    public IAVLNode findMax(IAVLNode root) { // O(log(n))
         if (root == null || (!root.isRealNode())) {
             return null;
         }
@@ -442,7 +442,7 @@ public class AVLTree {
 
     // Given node, update his size using updateSize() which sum his two children size +1,
     // Then updating all his parents' sizes including the root.
-    public void updatePathSize(IAVLNode node) {
+    public void updatePathSize(IAVLNode node) { // O(log(n))
         IAVLNode curr = node;
         while (curr != null) {       // while did not pass the root
             curr.updateSize();       // update size
@@ -457,7 +457,7 @@ public class AVLTree {
      * Returns the info of the item with the smallest key in the tree,
      * or null if the tree is empty
      */
-    public String min() {
+    public String min() { // O(1)
         if (this.empty()){
             return null;
         }
@@ -470,7 +470,7 @@ public class AVLTree {
      * Returns the info of the item with the largest key in the tree,
      * or null if the tree is empty
      */
-    public String max() {
+    public String max() { // O(1)
         if (this.empty()){
             return null;
         }
@@ -665,7 +665,7 @@ public class AVLTree {
      * precondition: keys(x,t) < keys() or keys(x,t) > keys(). t/tree might be empty (rank = -1).
      * postcondition: none
      */
-    public int join(IAVLNode x, AVLTree t) {
+    public int join(IAVLNode x, AVLTree t) { // O(log(n)) time complexity.
 
         // Both trees are empty
         // Equivalent to new tree with x as a single node
@@ -848,23 +848,23 @@ public class AVLTree {
         public int getHeight(); // Returns the height of the node (-1 for virtual nodes)
 
         // ---- Additional methods ----
-        public void setKey(int k);      // sets key -SAGI
+        public void setKey(int k);      // sets key
 
-        public void setValue(String s); // sets value -SAGI
+        public void setValue(String s); // sets value
 
-        public void demoteNode();        // demote node -SAGI
+        public void demoteNode();        // demote node
 
-        public boolean isLeaf();        // return true iff node is a leaf | *for virtual node return false -SAGI
+        public boolean isLeaf();        // return true iff node is a leaf | *for virtual node return false
 
-        public void promoteNode();      // promote node -SAGI
+        public void promoteNode();      // promote node
 
-        public int[] rankDifference(); // return array, arr[0] = rank difference with left node, arr[1] = rank difference with right node - ARIEL
+        public int[] rankDifference(); // return array, arr[0] = rank difference with left node, arr[1] = rank difference with right node
 
-        public void updateHeight(); // updates node's height, we will use this after rotation - ARIEL
+        public void updateHeight(); // updates node's height, we will use this after rotation
 
-        public int getSize();        // return size -SAGI
+        public int getSize();        // return size
 
-        public void updateSize();   // update size -SAGI
+        public void updateSize();   // update size
     }
 
     /**
@@ -877,6 +877,10 @@ public class AVLTree {
      * (It must implement IAVLNode)כן
      */
     public class AVLNode implements IAVLNode {
+
+        // All the methods bellow have O(1) time complexity.
+        // Trivial since we preform only pointers allocations and arithmetic operations.
+
         public int key;
         public String info;
         public IAVLNode parent, left, right; // Consider change to type 'AVLNode' AND\OR delete 'null'
