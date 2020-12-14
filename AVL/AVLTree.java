@@ -107,7 +107,7 @@ public class AVLTree {
         int balanceCnt = 1; // since insert is also count as balance operation, we start to count from 1
         //check if case A, since if it's case B we don't need to do anything else
         if(isLeaf) {
-            balanceCnt = insertRebalance(parent, 1);
+            balanceCnt = insertRebalance(parent, 0);
         }
         return balanceCnt;
     }
@@ -379,9 +379,8 @@ public class AVLTree {
             // Double Rotation (Case 4)
             if (childDLeft == 1 && childDRight == 2) {
                 rotateRight(node.getRight());
-                count++;
                 rotateLeft(node);
-                count++;
+                count += 6;
                 node = node.getParent().getParent();
                 return deleteRebalance(node, count);
             }
