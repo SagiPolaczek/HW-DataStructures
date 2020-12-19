@@ -104,7 +104,7 @@ public class AVLTree {
         node.setParent(parent);
         this.size++; // update tree's size after insertion
         updatePathSize(node);
-        int balanceCnt = 0; // since insert is also count as balance operation, we start to count from 1
+        int balanceCnt = 0;
         //check if case A, since if it's case B we don't need to do anything else
         if(isLeaf) {
             balanceCnt = insertRebalance(parent, 0);
