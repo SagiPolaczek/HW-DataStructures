@@ -234,8 +234,42 @@ public class FibonacciHeap {
      * You are not allowed to change H.
      */
     public static int[] kMin(FibonacciHeap H, int k) {
-        int[] arr = new int[42];
-        return arr; // should be replaced by student code
+        // Setup
+        int[] result = new int[k];
+        int i = 0;
+
+        // Using FibonacciHeap as a min-priority queue
+        FibonacciHeap Q = new FibonacciHeap();
+
+        // Inserting the first element to Q, which must be exist according to instructions.
+        // We want to keep a pointer to the original node in H, so we could travel there.
+        HeapNode insertedNode = Q.insert((H.findMin().getKey()));
+        insertedNode.setValue(H.findMin());
+
+        // Initialize variables for readability
+        HeapNode currNode;
+        HeapNode currChild;
+
+        // While the result array isn't full, we shall do the following:
+        while (i < k) {
+            currNode = Q.findMin().getValue();   // Retrieve the minimum key *value* in Q (It's node in H!)
+            result[i] = currNode.getKey();       // Insert to result in the correct index 'i'
+
+            if (currNode.hasChild()){            // If currNode has children in H to be explored, we shall add them to Q
+                currChild = currNode.getChild();
+
+                do {                             // Iterating through the children (in H) and add them to Q
+                    insertedNode = Q.insert(currChild.getKey()); // Insert to Q
+                    insertedNode.setValue(currChild);            // Keeping pointer to the node in H
+                    currChild = currChild.getNext();             // Promote
+                } while (currChild.getNext() != currChild);
+            }
+
+            i++;                                    // Promote 'i'
+            Q.deleteMin();                          // Delete the node we worked on
+        }
+
+        return result;
     }
 
     /**
@@ -255,11 +289,14 @@ public class FibonacciHeap {
         public HeapNode prev;
         public HeapNode parent;
 
+        public HeapNode value;
+
         public HeapNode(int key) {
             this.key = key;
             this.prev = this;
             this.next = this;
         }
+
 
         public int getKey() {
             return this.key;
@@ -305,6 +342,18 @@ public class FibonacciHeap {
             this.prev = node;
         }
 
+        // Returning true iff  node has a child
+        public boolean hasChild() {
+            return (this.child != null);
+        }
+
+        public HeapNode getValue() {
+            return this.value;
+        }
+
+        public void setValue(HeapNode node) {
+            this.value = node;
+        }
 
     }
 }
