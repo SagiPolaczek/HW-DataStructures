@@ -75,13 +75,115 @@ public class FibonacciHeap {
      * Delete the node containing the minimum key.
      */
     public void deleteMin() {
-        return; // should be replaced by student code
+        // Heap is empty
+        if (this.isEmpty()){
+            return;
+        }
+        // If it is the only node in the heap, we shall
+        if (this.size() == 1) {
+            this.min = null;
+            this.head = null;
+            this.size = 0;
+            this.treesAmount = 0;
+        }
 
+
+        HeapNode currMin = this.findMin();
+        int newTrees = 0;       // Count the new trees amount
+        int wasMarked = 0;      // Count the children which was marked, after deletion they roots.
+
+        // If currMin has children we shall disconnect the 'parent's pointers they have.
+        if (currMin.hasChild()){
+
+            HeapNode firstChild = currMin.getChild();  // Keep pointer to the first child
+            HeapNode lastChild = firstChild.getPrev(); // Keep pointer to the last child
+
+            HeapNode currChild = firstChild;          // Init a runner
+            do {
+                currChild.setParentToNull();
+                newTrees++;                    // Each child will become a tree
+                if (currChild.isMarked()) {
+                    currChild.unMarkNode();
+                    wasMarked++;
+                }
+                currChild = currChild.getNext();
+            } while (currChild != firstChild);
+
+            // Insert the children to the relative position of currMin.
+            // Handle below the case when currMin is a lonely root.
+            HeapNode minPrev = currMin.getPrev();
+            HeapNode minNext = currMin.getNext();
+
+            // Setting new pointers
+            minPrev.setNext(firstChild);
+            firstChild.setPrev(minPrev);
+            lastChild.setNext(minNext);
+            minNext.setPrev(lastChild);
+
+            // currMin is a lonely root.
+            if (treesAmount == 1) {
+                firstChild.setPrev(lastChild);
+                lastChild.setNext(firstChild);
+            }
+
+            // Updating 'head'
+            if (this.head == currMin) {
+                this.head = firstChild;
+            }
+        }
+        // If currMin doesn't have children
+        else {
+            // Updating pointers
+            HeapNode minPrev = currMin.getPrev();
+            HeapNode minNext = currMin.getNext();
+            minPrev.setNext(minNext);
+            minNext.setPrev(minPrev);
+            // Updating head
+            if (this.head == currMin){
+                this.head = minNext;
+            }
+        }
+
+        this.treesAmount += newTrees;
+        this.markedAmount -= wasMarked;
+
+        // Now we have a legal Fibonnaci Heap.
+        // Remained to operate Successive linking
+
+        this.successiveLinking();
+
+        return;
     }
 
     // Successive Linking - May need to change signature!!!
     public void successiveLinking() {
+        HeapNode[] pool = new HeapNode[50]; // maxRank < log_2(2^32) * 1.5 = 48 (Conclusion from class)
+
         return;
+    }
+    // Standard link operation between two nodes (which are roots when called)
+    public HeapNode link(HeapNode node1, HeapNode node2){
+        if (node1.getKey() < node2.getKey()) {
+
+            // Connecting node1 to node2's children
+            node1.setNext(node2.getChild());
+            node1.setPrev(node2.getChild().getPrev());
+            node2.getChild().setPrev(node1);
+            node2.getChild().getPrev().setNext(node1);
+
+            // Connecting node1 to node2 *as a child*
+            node2.setChild(node1);
+            node1.setParent(node2);
+
+            // Increasing rank and totalLinks
+            node2.rank++; // Consider to change to separate function
+            totalLinks++;
+            return node2;
+        } else {
+            // Shifting the order between the two.
+            // The keys are unique so it is a valid move.
+            return link(node2, node1);
+        }
     }
 
     /**
@@ -124,8 +226,6 @@ public class FibonacciHeap {
 
         // Updating fields' values
         this.size += heap2.size;
-        this.totalCuts += heap2.totalCuts;
-        this.totalLinks += heap2.totalLinks;
         this.markedAmount += heap2.markedAmount;
         this.treesAmount += heap2.treesAmount;
     }
@@ -248,6 +348,7 @@ public class FibonacciHeap {
 
         // Initialize variables for readability
         HeapNode currNode;
+        HeapNode firstChild;
         HeapNode currChild;
 
         // While the result array isn't full, we shall do the following:
@@ -256,13 +357,14 @@ public class FibonacciHeap {
             result[i] = currNode.getKey();       // Insert to result in the correct index 'i'
 
             if (currNode.hasChild()){            // If currNode has children in H to be explored, we shall add them to Q
-                currChild = currNode.getChild();
+                firstChild = currNode.getChild();
+                currChild = firstChild;
 
                 do {                             // Iterating through the children (in H) and add them to Q
                     insertedNode = Q.insert(currChild.getKey()); // Insert to Q
                     insertedNode.setValue(currChild);            // Keeping pointer to the node in H
                     currChild = currChild.getNext();             // Promote
-                } while (currChild.getNext() != currChild);
+                } while (currChild != firstChild);
             }
 
             i++;                                    // Promote 'i'
@@ -310,6 +412,14 @@ public class FibonacciHeap {
             return this.mark;
         }
 
+        public void markNode() {
+            this.mark = true;
+        }
+
+        public void unMarkNode() {
+            this.mark = false;
+        }
+
         public HeapNode getChild() {
             return this.child;
         }
@@ -353,6 +463,10 @@ public class FibonacciHeap {
 
         public void setValue(HeapNode node) {
             this.value = node;
+        }
+
+        public void setParentToNull() {
+            this.parent = null;
         }
 
     }
