@@ -155,9 +155,32 @@ public class FibonacciHeap {
         return;
     }
 
-    // Successive Linking - May need to change signature!!!
+    // Successive Linking - UNDONE!
+    /*
+        IDEA:
+        Iterating through the roots and using and array to match them as shown in class.
+        NOTE:
+        When putting a root in the array, we shall close the circle in the roots' "DLL".
+
+     */
     public void successiveLinking() {
         HeapNode[] pool = new HeapNode[50]; // maxRank < log_2(2^32) * 1.5 = 48 (Conclusion from class)
+
+        HeapNode currNode = this.head;
+        HeapNode tempNode;
+
+        while (currNode != null){
+            int r = currNode.getRank();
+
+            // If the 'r' spot in the pool is empty
+            if (pool[r] == null){
+                pool[r] = currNode;
+                tempNode = currNode;
+                currNode = currNode.getNext();
+                tempNode.setNextToNull();
+                tempNode.setPrevToNull();
+            }
+        }
 
         return;
     }
@@ -468,6 +491,15 @@ public class FibonacciHeap {
         public void setParentToNull() {
             this.parent = null;
         }
+
+        public void setNextToNull() {
+            this.next = null;
+        }
+
+        public void setPrevToNull() {
+            this.prev = null;
+        }
+
 
     }
 }
