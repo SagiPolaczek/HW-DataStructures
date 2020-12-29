@@ -297,23 +297,91 @@ public class FibonacciHeap {
      * <p>
      * Deletes the node x from the heap.
      */
-    public void delete(HeapNode x) {
-        return; // should be replaced by student code
+    public void delete(HeapNode x) { // temporary - ask sagi
+        // We decrease x's key to minimum value ("minus infinity")
+        x.setKey(Integer.MIN_VALUE);
+        decreaseKey(x , 0);
+        // Now x is surely the minimum node in the heap, so we use deleteMin() to delete this node
+        this.deleteMin();
     }
 
     /**
      * public void decreaseKey(HeapNode x, int delta)
      * <p>
      * The function decreases the key of the node x by delta. The structure of the heap should be updated
-     * to reflect this chage (for example, the cascading cuts procedure should be applied if needed).
+     * to reflect this change (for example, the cascading cuts procedure should be applied if needed).
      */
     public void decreaseKey(HeapNode x, int delta) {
-        return; // should be replaced by student code
+        x.setKey(x.getKey()-delta);
+        // Update min HeapNode if necessary
+        if(x.getKey() < this.min.getKey()) {
+            this.min = x;
+        }
+        // If x's key is smaller then its parent's key - we need to cut the edge.
+        // Therefore we will use cascadingCuts, as we saw in class
+        if(x.getParent() != null && x.getParent().getKey() > x.getKey()) {
+            cascadingCuts(x, x.getParent());
+        }
     }
 
-    // May need to change signature!!!
-    public void cascadingCuts(){
-        return;
+    /**
+     * public void cascadingCuts(HeapNode x, HeapNode y)
+     *
+     * similar to cascadingCuts method we saw in class
+     * here we assume that y is x's parent
+     */
+    public void cascadingCuts(HeapNode x, HeapNode y){ // add time complexity
+        cut(x,y);
+        if(y.getParent() != null) {
+            if(! y.isMarked()) {
+                y.markNode();
+                this.markedAmount++;
+            }
+            else {
+                cascadingCuts(y, y.getParent());
+            }
+        }
+    }
+
+    /**
+     * private void cut(HeapNode x, HeapNode y)
+     *
+     * We use this method for implementing cascadingCuts.
+     * Similar to cut method we saw in class
+     * here we assume that y is x's parent
+     */
+
+    private void cut(HeapNode x, HeapNode y) { // O(1)
+        // Cut x from y
+        x.setParentToNull();
+        x.unMarkNode();
+        this.markedAmount--;
+        // Update y's rank
+        y.setRank(y.getRank()-1);
+        if(x.getNext() == x) {
+            y.setChild(null);
+        }
+        else {
+            if(y.getChild() == x) {
+                // Define new child for y
+                HeapNode newChild = x.getNext();
+                y.setChild(newChild);
+                newChild.setPrev(x.getPrev());
+                // x becomes a root, so we update its prev,next to null
+                x.setNextToNull();
+                x.setPrevToNull();
+            }
+            else {
+                // Update pointers of y's children, after cutting x
+                x.getNext().setPrev(x.getPrev());
+                x.getPrev().setNext(x.getNext());
+            }
+        }
+        // Move x to the beginning of the heap
+        x.setNext(this.head);
+        this.head = x;
+        // Update the trees amount in the heap
+        this.treesAmount++;
     }
 
     /**
@@ -324,7 +392,7 @@ public class FibonacciHeap {
      * The potential equals to the number of trees in the heap plus twice the number of marked nodes in the heap.
      */
     public int potential() {
-        return treesAmount + (2 * markedAmount);
+        return this.treesAmount + (2 * this.markedAmount);
     }
 
     /**
@@ -408,7 +476,7 @@ public class FibonacciHeap {
 
         public int key;
         public int rank;
-        public boolean mark;
+        public int mark;
         public HeapNode child;
         public HeapNode next;
         public HeapNode prev;
@@ -427,20 +495,28 @@ public class FibonacciHeap {
             return this.key;
         }
 
+        public void setKey(int newKey) {
+            this.key = newKey;
+        }
+
         public int getRank() {
             return this.rank;
         }
 
+        public void setRank(int newRank) {
+            this.rank = newRank;
+        }
+
         public boolean isMarked() {
-            return this.mark;
+            return (this.mark == 1);
         }
 
         public void markNode() {
-            this.mark = true;
+            this.mark = 1;
         }
 
         public void unMarkNode() {
-            this.mark = false;
+            this.mark = 0;
         }
 
         public HeapNode getChild() {
