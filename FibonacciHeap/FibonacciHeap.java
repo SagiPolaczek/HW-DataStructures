@@ -63,8 +63,9 @@ public class FibonacciHeap {
             }
         }
 
-        // Updating size
+        // Updating size & treesAmount
         this.size++;
+        this.treesAmount++;
 
         return newNode;
     }
@@ -204,6 +205,7 @@ public class FibonacciHeap {
 
                 // First addition
                 if (this.head == null){
+                    //System.out.println("");
                     this.head = currNode;
                     this.min = currNode;
                     this.treesAmount++;
@@ -231,13 +233,14 @@ public class FibonacciHeap {
 
     // Standard link operation between two nodes (which are roots when called)
     public HeapNode link(HeapNode node1, HeapNode node2){
-        if (node1.getKey() < node2.getKey()) {
-
+        if (node1.getKey() > node2.getKey()) {
             // Connecting node1 to node2's children
-            node1.setNext(node2.getChild());
-            node1.setPrev(node2.getChild().getPrev());
-            node2.getChild().setPrev(node1);
-            node2.getChild().getPrev().setNext(node1);
+            if(node2.getChild() != null) {
+                node1.setNext(node2.getChild());
+                node1.setPrev(node2.getChild().getPrev());
+                node2.getChild().setPrev(node1);
+                node2.getChild().getPrev().setNext(node1);
+            }
 
             // Connecting node1 to node2 *as a child*
             node2.setChild(node1);
