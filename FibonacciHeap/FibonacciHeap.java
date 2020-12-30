@@ -79,17 +79,14 @@ public class FibonacciHeap {
         if (this.isEmpty()){
             return;
         }
-        // If it is the only node in the heap, we shall
+        // If it is the only node in the heap, we shall set it to default
         if (this.size() == 1) {
-            this.min = null;
-            this.head = null;
-            this.size = 0;
-            this.treesAmount = 0;
+            setHeapToDefault();
+            this.size--;
         }
 
-
         HeapNode currMin = this.findMin();
-        int newTrees = 0;       // Count the new trees amount
+        int newTrees = -1;       // Count the new trees amount
         int wasMarked = 0;      // Count the children which was marked, after deletion they roots.
 
         // If currMin has children we shall disconnect the 'parent's pointers they have.
@@ -155,35 +152,83 @@ public class FibonacciHeap {
         return;
     }
 
-    // Successive Linking - UNDONE!
+    // Successive Linking - DONE!
     /*
         IDEA:
         Iterating through the roots and using and array to match them as shown in class.
         NOTE:
         When putting a root in the array, we shall close the circle in the roots' "DLL".
 
+        Time Complexity O(#Trees + #Links)
+        amortized O(log(n))
+
      */
     public void successiveLinking() {
+        // Initialize array in length of log_2(n) * 1.5, takes O(log(n)) time
         HeapNode[] pool = new HeapNode[50]; // maxRank < log_2(2^32) * 1.5 = 48 (Conclusion from class)
 
-        HeapNode currNode = this.head;
-        HeapNode tempNode;
+        HeapNode currNode;
+        int currRank;
 
-        while (currNode != null){
-            int r = currNode.getRank();
+        // Iterating of the root, and add them to the pool, aka 'buckets' as shown in class
+        for (int i = 0; i < this.treesAmount; i++) {
+            currNode = this.head;
 
-            // If the 'r' spot in the pool is empty
-            if (pool[r] == null){
-                pool[r] = currNode;
-                tempNode = currNode;
-                currNode = currNode.getNext();
-                tempNode.setNextToNull();
-                tempNode.setPrevToNull();
+            // Separate currNode from the entire root list
+            this.head = currNode.getNext();
+            this.head.setPrev(currNode.getPrev());
+            currNode.setPrev(currNode);
+            currNode.setNext(currNode);
+
+            currRank = currNode.getRank();
+
+            // Allocating each root to some bucket,
+            // If bucket is taken, link and move to the next one.
+            while (pool[currRank] != null){
+                currNode = link(currNode, pool[currRank]); // Link <3
+                pool[currRank] = null;
+                currRank = currNode.getRank();
+            }
+            pool[currRank] = currNode;
+
+        }
+
+        this.setHeapToDefault();
+        HeapNode lastNode;
+
+        // Iterating over all the buckets and add the non-empty buckets to the heap
+        for (int i = 0; i < pool.length ; i++) {
+            currNode = pool[i];
+
+            if (currNode != null) {
+
+                // First addition
+                if (this.head == null){
+                    this.head = currNode;
+                    this.min = currNode;
+                    this.treesAmount++;
+                } else {
+                    lastNode = this.head.getPrev();
+
+                    // Connecting the node
+                    lastNode.setNext(currNode);
+                    currNode.setPrev(lastNode);
+                    currNode.setNext(this.head);
+                    this.head.setPrev(currNode);
+                    this.treesAmount++;
+
+                    // Updating minimum
+                    if(this.min.getKey() > currNode.getKey()){
+                        this.min = currNode;
+                    }
+                }
             }
         }
 
         return;
     }
+
+
     // Standard link operation between two nodes (which are roots when called)
     public HeapNode link(HeapNode node1, HeapNode node2){
         if (node1.getKey() < node2.getKey()) {
@@ -207,6 +252,13 @@ public class FibonacciHeap {
             // The keys are unique so it is a valid move.
             return link(node2, node1);
         }
+    }
+
+    // Setting all heap parameters to default except 'markedNodes'
+    public void setHeapToDefault() {
+        this.min = null;
+        this.head = null;
+        this.treesAmount = 0;
     }
 
     /**
