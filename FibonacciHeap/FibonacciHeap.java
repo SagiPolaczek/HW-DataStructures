@@ -55,7 +55,6 @@ public class FibonacciHeap {
             newNode.setNext(this.head);
             newNode.setPrev(last);
             last.setNext(newNode);
-            this.head = newNode;
 
             // Updating minimum
             if (key < this.min.getKey()){
@@ -99,6 +98,7 @@ public class FibonacciHeap {
 
             HeapNode currChild = firstChild;          // Init a runner
             do {
+
                 currChild.setParentToNull();
                 newTrees++;                    // Each child will become a tree
                 if (currChild.isMarked()) {
@@ -188,10 +188,11 @@ public class FibonacciHeap {
             // Allocating each root to some bucket,
             // If bucket is taken, link and move to the next one.
             while (pool[currRank] != null){
-                currNode = link(currNode, pool[currRank]); // Link <3
+                currNode = link(pool[currRank], currNode); // Link <3
                 pool[currRank] = null;
                 currRank = currNode.getRank();
             }
+
             pool[currRank] = currNode;
 
         }
@@ -239,14 +240,22 @@ public class FibonacciHeap {
     public HeapNode link(HeapNode node1, HeapNode node2){
 
         // node2's key is smaller, thus it'll be the root
-        if (node1.getKey() > node2.getKey()) {
+        if (node1.getKey() < node2.getKey()){
+            // Shifting the order between the two.
+            // The keys are unique so it is a valid move.
+            return link(node2, node1);
+        }
+        else  { // We assume node2.key < node1.key
 
             // Connecting node1 to node2's children
-            if(node2.getChild() != null) {
+            if(node2.getRank() > 0) {
                 node1.setNext(node2.getChild());
                 node1.setPrev(node2.getChild().getPrev());
                 node2.getChild().getPrev().setNext(node1);
                 node2.getChild().setPrev(node1);
+            } else {
+                node1.setNext(node1);
+                node1.setPrev(node1);
             }
 
             // Connecting node1 to node2 *as a child*
@@ -257,10 +266,6 @@ public class FibonacciHeap {
             node2.rank++; // Consider to change to separate function
             totalLinks++;
             return node2;
-        } else {
-            // Shifting the order between the two.
-            // The keys are unique so it is a valid move.
-            return link(node2, node1);
         }
     }
 
