@@ -152,7 +152,6 @@ public class FibonacciHeap {
         // Remained to operate Successive linking
 
         this.successiveLinking();
-
         return;
     }
 
@@ -400,8 +399,6 @@ public class FibonacciHeap {
 
         // Now x is surely the minimum node in the heap, so we use deleteMin() to delete this node
         this.deleteMin();
-
-
     }
 
     /**
@@ -460,35 +457,41 @@ public class FibonacciHeap {
         }
         // Update y's rank
         y.setRank(y.getRank()-1);
-        if(x.getNext() == x) {
+        if(x.getNext() == x) { // x is the only child of y
             y.setChild(null);
         }
         else {
-            if(y.getChild() == x) {
+            if(y.getChild() == x) { // x is the first child
                 // Define new child for y
+                HeapNode lastChild = x.getPrev();
                 HeapNode newChild = x.getNext();
                 y.setChild(newChild);
-                newChild.setPrev(x.getPrev());
-                // x becomes a root, so we update its prev,next to null
-                x.setNext(x);
-                x.setPrev(x);
+                newChild.setPrev(lastChild);
+                lastChild.setNext(newChild);
             }
-            else {
+            else { // x is not the first child
                 // Update pointers of y's children, after cutting x
                 x.getNext().setPrev(x.getPrev());
                 x.getPrev().setNext(x.getNext());
-                x.setNext(x); // Changed
-                x.setPrev(x); // .
             }
+            // x becomes a root, so we update its prev,next to itself
+            x.setNext(x);
+            x.setPrev(x);
         }
 
-        // Move x to the beginning of the heap
-        x.setNext(this.head);
-        this.head.setPrev(x);
-        x.setPrev(this.head.getPrev());
-        x.getPrev().setNext(x);
+        if (this.head != x) {
+            HeapNode lastNode = this.head.getPrev();
+            HeapNode firstNode = this.head;
 
-        this.head = x;
+            lastNode.setNext(x);
+            firstNode.setPrev(x);
+
+            x.setNext(firstNode);
+            x.setPrev(lastNode);
+
+
+            this.head = x;
+        }
 
         // Update the trees amount in the heap
         this.treesAmount++;
