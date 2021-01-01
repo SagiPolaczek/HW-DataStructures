@@ -55,6 +55,7 @@ public class FibonacciHeap {
             newNode.setNext(this.head);
             newNode.setPrev(last);
             last.setNext(newNode);
+            this.head = newNode;
 
             // Updating minimum
             if (key < this.min.getKey()){
@@ -175,10 +176,12 @@ public class FibonacciHeap {
         // Iterating of the root, and add them to the pool, aka 'buckets' as shown in class
         for (int i = 0; i < this.treesAmount; i++) {
             currNode = this.head;
-
+//            System.out.println("currKey in suclink: " + currNode.getKey());
+//            System.out.println("currKey and its prev: " + currNode.getKey() +","+currNode.getPrev().getKey());
             // Separate currNode from the entire root list
             this.head = currNode.getNext();
             this.head.setPrev(currNode.getPrev());
+            this.head.getPrev().setNext(this.head);///
             currNode.setPrev(currNode);
             currNode.setNext(currNode);
             currNode.setParentToNull();
@@ -187,7 +190,10 @@ public class FibonacciHeap {
 
             // Allocating each root to some bucket,
             // If bucket is taken, link and move to the next one.
+//            System.out.println("currKey and its prev: " + currNode.getKey() +","+currNode.getPrev().getKey());
+
             while (pool[currRank] != null){
+//                System.out.println("currNode here is : " + currNode.getKey());
                 currNode = link(pool[currRank], currNode); // Link <3
                 pool[currRank] = null;
                 currRank = currNode.getRank();
@@ -245,14 +251,30 @@ public class FibonacciHeap {
             // The keys are unique so it is a valid move.
             return link(node2, node1);
         }
-        else  { // We assume node2.key < node1.key
 
+        else  { // We assume node2.key < node1.key
+//            System.out.println("-- Start Link -- ");
+//
+//            System.out.println("node1 is: " + node1.getKey() + ", node2 is: " + node2.getKey());
+//            System.out.println("node1: " + node1.getNext().getKey() + " " +  node1.getPrev().getKey());
+//            System.out.println("node2 rank: " + node2.getRank());
             // Connecting node1 to node2's children
             if(node2.getRank() > 0) {
+//                System.out.println("node2 child's prev*****: " + node2.getChild().getPrev().getKey());
+//                System.out.println("node2 child is :" + node2.getChild().getKey());
                 node1.setNext(node2.getChild());
+//                System.out.println("node2 child's key1:" +node1.getNext().getKey());
                 node1.setPrev(node2.getChild().getPrev());
+//                System.out.println("node2 child's key2:" +node1.getNext().getKey());
+//                System.out.println("---");
+//                System.out.println("node2 child: " + node2.getChild().getKey());
+//                System.out.println("node2 child's prev*****: " + node2.getChild().getPrev().getKey());
                 node2.getChild().getPrev().setNext(node1);
+//                System.out.println("---");
+//                System.out.println("node2 child's key3:" +node1.getNext().getKey());
                 node2.getChild().setPrev(node1);
+//                System.out.println("node2 child's key4:" +node1.getNext().getKey());
+
             } else {
                 node1.setNext(node1);
                 node1.setPrev(node1);
@@ -262,9 +284,15 @@ public class FibonacciHeap {
             node2.setChild(node1);
             node1.setParent(node2);
 
+//            System.out.println("node2 child is :" + node2.getChild().getKey() + " and his next is: "
+//                    + node2.getChild().getNext().getKey());
+
             // Increasing rank and totalLinks
             node2.rank++; // Consider to change to separate function
             totalLinks++;
+
+//            System.out.println("-- END Link -- ");
+
             return node2;
         }
     }
@@ -366,10 +394,14 @@ public class FibonacciHeap {
      */
     public void delete(HeapNode x) { // temporary - ask sagi
         // We decrease x's key to minimum value ("minus infinity")
-        x.setKey(Integer.MIN_VALUE);
+
+        x.setKey(Integer.MIN_VALUE); // val - delta = min_value --> delta = val - minvalue
         decreaseKey(x , 0);
+
         // Now x is surely the minimum node in the heap, so we use deleteMin() to delete this node
         this.deleteMin();
+
+
     }
 
     /**
@@ -384,6 +416,7 @@ public class FibonacciHeap {
         if(x.getKey() < this.min.getKey()) {
             this.min = x;
         }
+
         // If x's key is smaller then its parent's key - we need to cut the edge.
         // Therefore we will use cascadingCuts, as we saw in class
         if(x.getParent() != null && x.getParent().getKey() > x.getKey()) {
@@ -421,8 +454,10 @@ public class FibonacciHeap {
     private void cut(HeapNode x, HeapNode y) { // O(1)
         // Cut x from y
         x.setParentToNull();
-        x.unMarkNode();
-        this.markedAmount--;
+        if (x.isMarked()) {
+            x.unMarkNode();
+            this.markedAmount--;
+        }
         // Update y's rank
         y.setRank(y.getRank()-1);
         if(x.getNext() == x) {
@@ -435,18 +470,26 @@ public class FibonacciHeap {
                 y.setChild(newChild);
                 newChild.setPrev(x.getPrev());
                 // x becomes a root, so we update its prev,next to null
-                x.setNextToNull();
-                x.setPrevToNull();
+                x.setNext(x);
+                x.setPrev(x);
             }
             else {
                 // Update pointers of y's children, after cutting x
                 x.getNext().setPrev(x.getPrev());
                 x.getPrev().setNext(x.getNext());
+                x.setNext(x); // Changed
+                x.setPrev(x); // .
             }
         }
+
         // Move x to the beginning of the heap
         x.setNext(this.head);
+        this.head.setPrev(x);
+        x.setPrev(this.head.getPrev());
+        x.getPrev().setNext(x);
+
         this.head = x;
+
         // Update the trees amount in the heap
         this.treesAmount++;
     }
@@ -634,15 +677,6 @@ public class FibonacciHeap {
         public void setParentToNull() {
             this.parent = null;
         }
-
-        public void setNextToNull() {
-            this.next = null;
-        }
-
-        public void setPrevToNull() {
-            this.prev = null;
-        }
-
 
     }
 }
