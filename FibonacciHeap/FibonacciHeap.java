@@ -449,6 +449,7 @@ public class FibonacciHeap {
      */
 
     private void cut(HeapNode x, HeapNode y) { // O(1)
+        totalCuts++;
         // Cut x from y
         x.setParentToNull();
         if (x.isMarked()) {
