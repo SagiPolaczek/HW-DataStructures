@@ -65,7 +65,98 @@ public class MeasurementsHeap {
         System.out.println("TotalCuts = " + FibonacciHeap.totalCuts());
         System.out.println("Potential = " + heap3.potential());
 
+        // Part B
+
+        sequence2(heap0, 1000);
+        sequence2(heap0, 1000);
+        sequence2(heap0, 1000);
+
+
+        // m = 1000
+        System.out.println("---------");
+        System.out.println("Sequence 2:");
+        System.out.println("---------");
+
+
+
+        // set links & cuts to zero
+        FibonacciHeap.totalLinks = 0;
+        FibonacciHeap.totalCuts = 0;
+
+        // sequence1: k = 10
+
+        FibonacciHeap heap4 = new FibonacciHeap();
+
+        startTime = System.nanoTime();
+        sequence2(heap4, 1000);
+        stopTime = System.nanoTime();
+
+        System.out.println("Results for m = 1000:");
+        System.out.println("Run-Time = "+(stopTime-startTime));
+        System.out.println("TotalLinks = " + FibonacciHeap.totalLinks());
+        System.out.println("TotalCuts = " + FibonacciHeap.totalCuts());
+        System.out.println("Potential = " + heap4.potential());
+
+        System.out.println(">>>>>>>>>>>");
+
+        // m = 2000
+
+
+        // set links & cuts to zero
+        FibonacciHeap.totalLinks = 0;
+        FibonacciHeap.totalCuts = 0;
+
+        // sequence1: k = 10
+
+        FibonacciHeap heap5 = new FibonacciHeap();
+
+        startTime = System.nanoTime();
+        sequence2(heap5, 2000);
+        stopTime = System.nanoTime();
+
+        System.out.println("Results for m = 2000:");
+        System.out.println("Run-Time = "+(stopTime-startTime));
+        System.out.println("TotalLinks = " + FibonacciHeap.totalLinks());
+        System.out.println("TotalCuts = " + FibonacciHeap.totalCuts());
+        System.out.println("Potential = " + heap5.potential());
+
+        // set links & cuts to zero
+        FibonacciHeap.totalLinks = 0;
+        FibonacciHeap.totalCuts = 0;
+
+
+        System.out.println(">>>>>>>>>>>");
+
+        // m = 3000
+
+
+        // set links & cuts to zero
+        FibonacciHeap.totalLinks = 0;
+        FibonacciHeap.totalCuts = 0;
+
+        // sequence1: k = 10
+
+        FibonacciHeap heap6 = new FibonacciHeap();
+
+        startTime = System.nanoTime();
+        sequence2(heap6, 3000);
+        stopTime = System.nanoTime();
+
+        System.out.println("Results for m = 3000:");
+        System.out.println("Run-Time = "+(stopTime-startTime));
+        System.out.println("TotalLinks = " + FibonacciHeap.totalLinks());
+        System.out.println("TotalCuts = " + FibonacciHeap.totalCuts());
+        System.out.println("Potential = " + heap6.potential());
+
+        // set links & cuts to zero
+        FibonacciHeap.totalLinks = 0;
+        FibonacciHeap.totalCuts = 0;
+
     }
+
+
+    // Sequence1 and Sequence2 methods
+
 
     public static void sequence1(FibonacciHeap heap, int k) {
         int m = (int) Math.pow(2,k);
@@ -86,6 +177,19 @@ public class MeasurementsHeap {
             heap.decreaseKey(nodes[sum], m+1);
         }
         heap.decreaseKey(nodes[m-1] , m+1);
+    }
+
+
+
+    public static void sequence2(FibonacciHeap heap, int m) {
+        for (int i = m; i >= 1; i--){
+            heap.insert(i);
+        }
+
+        for (int i = 0; i< m/2 ; i++){
+            heap.deleteMin();
+        }
+
     }
 
 
