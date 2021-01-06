@@ -15,7 +15,7 @@ public class FibonacciHeap {
     public int markedAmount;
     public int treesAmount;
 
-    public FibonacciHeap() {
+    public FibonacciHeap() { // Same as default constructor
     }
 
 
@@ -27,8 +27,8 @@ public class FibonacciHeap {
      * The method returns true if and only if the heap
      * is empty.
      */
-    public boolean isEmpty() {
-        return (size == 0); // O(1)
+    public boolean isEmpty() { // O(1)
+        return (size == 0);
     }
 
     /**
@@ -38,7 +38,7 @@ public class FibonacciHeap {
      * <p>
      * Returns the new node created.
      */
-    public HeapNode insert(int key) {       //  O(1)
+    public HeapNode insert(int key) { // O(1)
         // Initialize the insert node
         HeapNode newNode = new HeapNode(key);
 
@@ -155,7 +155,7 @@ public class FibonacciHeap {
         return;
     }
 
-    // Successive Linking - DONE!
+    // Successive Linking
     /*
         IDEA:
         Iterating through the roots and using and array to match them as shown in class.
@@ -275,7 +275,7 @@ public class FibonacciHeap {
         }
     }
 
-    // Setting all heap parameters to default except 'markedNodes'
+    // Setting all heap parameters to default except 'markedNodes' & 'size'
     public void setHeapToDefault() { // O(1)
         this.min = null;
         this.head = null;
@@ -388,7 +388,7 @@ public class FibonacciHeap {
      * The function decreases the key of the node x by delta. The structure of the heap should be updated
      * to reflect this change (for example, the cascading cuts procedure should be applied if needed).
      */
-    public void decreaseKey(HeapNode x, int delta) { // Amortized O(1) , WC O(log(n))
+    public void decreaseKey(HeapNode x, int delta) { // Amortized O(1) , WC O(n)
         x.setKey(x.getKey()-delta);
         // Update min HeapNode if necessary
         if(x.getKey() < this.min.getKey()) {
@@ -408,7 +408,7 @@ public class FibonacciHeap {
      * similar to cascadingCuts method we saw in class
      * here we assume that y is x's parent
      */
-    public void cascadingCuts(HeapNode x, HeapNode y){ // Amortized O(1) , WC O(log(n))
+    public void cascadingCuts(HeapNode x, HeapNode y){ // Amortized O(1) , WC O(n)
         cut(x,y);
         if(y.getParent() != null) {
             if(! y.isMarked()) {
@@ -470,7 +470,6 @@ public class FibonacciHeap {
 
             x.setNext(firstNode);
             x.setPrev(lastNode);
-
 
             this.head = x;
         }
@@ -585,6 +584,11 @@ public class FibonacciHeap {
             this.next = this;
         }
 
+        /**
+         * All methods below takes O(1) time,
+         * Since we only return values related to HeapNode fields
+         *
+         */
 
         public int getKey() {
             return this.key;
